@@ -1,0 +1,8 @@
+.ng-valid.ng-dirty{
+	border-bottom-color:green;
+	border-bottom-width: 2px;
+}
+.ng-invalid.ng-dirty{
+	border-bottom-color:red;
+	border-bottom-width: 2px;
+}
