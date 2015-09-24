@@ -9,6 +9,7 @@ app.use(bodyParser.json());
 
 //routing
 app.get('/', function(request, response){
+	response.sendFile(__dirname + '/public/bpr.htm');
 });
 app.post('/submitBP', function(request, response){
 	console.log(request.body);
