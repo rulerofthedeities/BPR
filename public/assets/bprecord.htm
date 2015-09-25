@@ -1,3 +1,6 @@
-<li ng-repeat="bpr in records">
-    {{$index + 1}} {{bpr.dtSubmit | date:'yyyy-MM-dd HH:mm:ss'}} {{bpr.sys}} {{bpr.dia}} {{bpr.pulse}}
-</li>
+<div ng-repeat="bpr in records" class="row list-group-item">
+	<div class="col-xs-6">{{bpr.dtSubmit | date:'yy-MM-dd HH:mm'}}</div>
+	<div class="col-xs-2" ng-class="{'bg-success': bpr.sys < 141, 'text-success': bpr.sys < 141, 'bg-danger':bpr.sys > 149, 'text-danger':bpr.sys > 149}">{{bpr.sys}}</div>
+	<div class="col-xs-2" ng-class="{'bg-success': bpr.dia < 81, 'text-success': bpr.dia < 90, 'bg-danger':bpr.dia > 90, 'text-danger':bpr.dia > 89}">{{bpr.dia}}</div>
+	<div class="col-xs-2">{{bpr.pulse}}</div>
+</div>

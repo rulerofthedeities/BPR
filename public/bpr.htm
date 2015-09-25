@@ -29,10 +29,14 @@
 		       	<button type="submit" class="btn" ng-class="bpForm.$invalid ? '' : 'btn-success'" ng-disabled="bpForm.$invalid">Add</button>
 		    </form>
 	    </div>
-	    <div>
-	    	<ul class="list-unstyled">
-	    		<bp-record></bp-record>
-	    	</ul>
+	    <div class="container">
+		    <div class="row list-group-item">
+				<div class="col-xs-6">Date</div>
+				<div class="col-xs-2">SYS</div>
+				<div class="col-xs-2">DIA</div>
+				<div class="col-xs-2">Pulse</div>
+			</div>
+	    	<bp-record></bp-record>
 	    </div>
     </div>
 </body>

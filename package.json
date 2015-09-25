@@ -20,5 +20,9 @@
   "bugs": {
     "url": "https://github.com/rulerofthedeities/BPR/issues"
   },
-  "homepage": "https://github.com/rulerofthedeities/BPR#readme"
+  "homepage": "https://github.com/rulerofthedeities/BPR#readme",
+  "dependencies": {
+    "body-parser": "^1.14.0",
+    "express": "^4.13.3"
+  }
 }
