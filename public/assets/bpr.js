@@ -21,3 +21,20 @@ app.controller("formController", function($scope, $http){
     
     };
 });
+app.directive('bpRecord', function(){
+	var controller = ['$http', '$scope', function($http, $scope){
+                this.records = [];
+                $http.get("/records").then(function(response){
+                	console.log(response);
+                    $scope.records = response.data;
+                    console.log("database");
+                    console.log($scope.records);
+                });
+            }];
+
+	return{
+		restrict: 'E',
+		templateUrl: '/assets/bprecord.htm',
+		controller: controller 
+	};
+});

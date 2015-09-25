@@ -8,25 +8,32 @@
     <script src="assets/bpr.js"></script>
 </head>
 <body>
-	<div ng-app="bpApp" ng-controller="formController as ctrl" class="container well">
-		<form name="bpForm" class="form-inline" ng-submit="bpForm.$valid && ctrl.submitBpr(ctrl.bpr)" novalidate>
-			<div class="input-group">
-			    <label class="sr-only" for="sys">SYS</label>
-	        	<input type="text" id="sys" class="form-control" ng-model="ctrl.bpr.sys" placeholder="SYS" pattern="^\d{2,3}$" required>
-	        	<span class="input-group-addon">mmHg</span>
-	        </div>
-			<div class="input-group">
-			    <label class="sr-only" for="dia">DIA</label>
-	        	<input type="text" id="dia" class="form-control" ng-model="ctrl.bpr.dia" placeholder="DIA" pattern="^\d{2,3}$" required>
-	        	<span class="input-group-addon">mmHg</span>
-	        </div>
-			<div class="input-group">
-			    <label class="sr-only" for="pulse">Pulse</label>
-	        	<input type="text" id="pulse" class="form-control" ng-model="ctrl.bpr.pulse" placeholder="PULSE" pattern="^\d{2,3}$">
-	        	<span class="input-group-addon">/min</span>
-	        </div>
-	       	<button type="submit" class="btn" ng-class="bpForm.$invalid ? '' : 'btn-success'" ng-disabled="bpForm.$invalid">Add</button>
-	    </form>
+	<div ng-app = "bpApp">
+		<div ng-controller="formController as ctrl" class="container well">
+			<form name="bpForm" class="form-inline" ng-submit="bpForm.$valid && ctrl.submitBpr(ctrl.bpr)" novalidate>
+				<div class="input-group">
+				    <label class="sr-only" for="sys">SYS</label>
+		        	<input type="text" id="sys" class="form-control" ng-model="ctrl.bpr.sys" placeholder="SYS" pattern="^\d{2,3}$" required>
+		        	<span class="input-group-addon">mmHg</span>
+		        </div>
+				<div class="input-group">
+				    <label class="sr-only" for="dia">DIA</label>
+		        	<input type="text" id="dia" class="form-control" ng-model="ctrl.bpr.dia" placeholder="DIA" pattern="^\d{2,3}$" required>
+		        	<span class="input-group-addon">mmHg</span>
+		        </div>
+				<div class="input-group">
+				    <label class="sr-only" for="pulse">Pulse</label>
+		        	<input type="text" id="pulse" class="form-control" ng-model="ctrl.bpr.pulse" placeholder="PULSE" pattern="^\d{2,3}$">
+		        	<span class="input-group-addon">/min</span>
+		        </div>
+		       	<button type="submit" class="btn" ng-class="bpForm.$invalid ? '' : 'btn-success'" ng-disabled="bpForm.$invalid">Add</button>
+		    </form>
+	    </div>
+	    <div>
+	    	<ul class="list-unstyled">
+	    		<bp-record></bp-record>
+	    	</ul>
+	    </div>
     </div>
 </body>
 </html>
