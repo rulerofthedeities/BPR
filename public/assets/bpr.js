@@ -14,13 +14,15 @@ app.controller("formController", function($scope, $http){
 
 		$http(req).then(function(response) {
         //$http.post('/submitBP', this.bpr).then(function(response) {
-		    $scope.response = response;
-	        console.log(response);
-		  });
+        	console.log("response");
+        	console.log(response);
+		    $scope.records = response.data; 
+		 });
 	    this.bpr = {};
     
     };
 });
+
 app.directive('bpRecord', function(){
 	var controller = ['$http', '$scope', function($http, $scope){
                 this.records = [];
