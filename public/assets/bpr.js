@@ -2,7 +2,9 @@ var app = angular.module("bpApp", []);
 app.controller("formController", function($scope, $http){
     this.bpr = {};
     this.submitBpr = function(bpr){
-	    console.log(this.bpr);
+    	//this.bpr.dtSubmit = new Date();
+
+	    //Post new bpr
 	    var req = {
 			 method: 'POST',
 			 url: '/submitBP',
@@ -14,10 +16,10 @@ app.controller("formController", function($scope, $http){
 
 		$http(req).then(function(response) {
         //$http.post('/submitBP', this.bpr).then(function(response) {
-        	console.log("response");
-        	console.log(response);
-		    $scope.records = response.data; 
-		 });
+        	//update list
+		    $scope.records.unshift(response.data); 
+		});
+
 	    this.bpr = {};
     
     };
@@ -27,10 +29,7 @@ app.directive('bpRecord', function(){
 	var controller = ['$http', '$scope', function($http, $scope){
                 this.records = [];
                 $http.get("/records").then(function(response){
-                	console.log(response);
                     $scope.records = response.data;
-                    console.log("database");
-                    console.log($scope.records);
                 });
             }];
 
@@ -40,3 +39,4 @@ app.directive('bpRecord', function(){
 		controller: controller 
 	};
 });
+

@@ -4,7 +4,7 @@ var express = require('express'),
 
 //config
 app.set('port', process.env.PORT || 3302);
-app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 
 //routing
@@ -26,11 +26,8 @@ app.post('/submitBP', function(request, response){
 	//todo: add to database
 	var newRecord = request.body;
 	newRecord.dtSubmit = new Date();
-	console.log("body");
-	console.log(request.body);
-	console.log(newRecord);
-	records.push(newRecord);
-	response.status(201).json(records);
+	records.unshift(newRecord);
+	response.status(201).json(newRecord);
 });
 
 //run server
