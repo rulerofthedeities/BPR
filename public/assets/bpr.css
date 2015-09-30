@@ -28,3 +28,7 @@ body{
 	border-bottom-color:red;
 	border-bottom-width: 2px;
 }
+.unit{
+	font-weight:normal;
+	color:#bbb;
+}

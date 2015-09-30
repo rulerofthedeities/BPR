@@ -7,37 +7,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.js"></script>
     <script src="assets/bpr.js"></script>
 </head>
-<body>
-	<div ng-app = "bpApp">
-		<div ng-controller="formController as ctrl" class="container well">
-			<form name="bpForm" class="form-inline" ng-submit="bpForm.$valid && ctrl.submitBpr(ctrl.bpr)" novalidate>
-				<div class="input-group">
-				    <label class="sr-only" for="sys">SYS</label>
-		        	<input type="text" id="sys" class="form-control" ng-model="ctrl.bpr.sys" placeholder="SYS" pattern="^\d{2,3}$" required>
-		        	<span class="input-group-addon">mmHg</span>
-		        </div>
-				<div class="input-group">
-				    <label class="sr-only" for="dia">DIA</label>
-		        	<input type="text" id="dia" class="form-control" ng-model="ctrl.bpr.dia" placeholder="DIA" pattern="^\d{2,3}$" required>
-		        	<span class="input-group-addon">mmHg</span>
-		        </div>
-				<div class="input-group">
-				    <label class="sr-only" for="pulse">Pulse</label>
-		        	<input type="text" id="pulse" class="form-control" ng-model="ctrl.bpr.pulse" placeholder="PULSE" pattern="^\d{2,3}$">
-		        	<span class="input-group-addon">/min</span>
-		        </div>
-		       	<button type="submit" class="btn" ng-class="bpForm.$invalid ? '' : 'btn-success'" ng-disabled="bpForm.$invalid">Add</button>
-		    </form>
-	    </div>
-	    <div id="list" class="container">
-		    <div class="row list-group-item">
-				<div class="col-xs-6">Date</div>
-				<div class="col-xs-2">SYS</div>
-				<div class="col-xs-2">DIA</div>
-				<div class="col-xs-2">Pulse</div>
-			</div>
-	    	<bp-record></bp-record>
-	    </div>
-    </div>
+<body ng-app="bpApp">
+	<bp-nav></bp-nav>
+	
 </body>
 </html>

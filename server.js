@@ -18,7 +18,7 @@ var records = [
 	{sys:121, dia:82, pulse: 60, dtSubmit: new Date(2015, 9, 28, 10, 06)}, 
 	{sys:135, dia:92, pulse: 65, dtSubmit: new Date(2015, 9, 27, 09, 12)}];
 
-app.get('/records', function(request, response){
+app.get('/recentrecords', function(request, response){
 	//return records
     response.json(records);
 });
