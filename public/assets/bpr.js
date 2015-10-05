@@ -1,16 +1,16 @@
-var app = angular.module("bpApp", ['ngRoute']);
+angular.module("bpApp", ['ngRoute'])
 
-app.config(function($routeProvider){
+.config(function($routeProvider){
 	$routeProvider.when('/add', {
-		templateUrl: 'assets/templates/addbp.htm'
+		templateUrl: 'views/bpnew.htm'
 	}).when('/all', {
-		templateUrl: 'assets/templates/bplist.htm'
+		templateUrl: 'views/bplist.htm'
 	}).when('/charts', {
-		templateUrl: 'assets/templates/bpcharts.htm'
+		templateUrl: 'views/bpcharts.htm'
 	}).otherwise({redirectTo: '/add'});
-});
+})
 
-app.controller("formController", function($scope, $http){
+.controller("formController", function($scope, $http){
     this.bpr = {};
     this.submitBpr = function(bpr){
     	//this.bpr.dtSubmit = new Date();
@@ -24,68 +24,59 @@ app.controller("formController", function($scope, $http){
 			 },
 			 data: this.bpr
 			};
-
 		$http(req).then(function(response) {
         	//update list
-		    //$scope.records.unshift(response.data); 
+		    $scope.records.unshift(response.data); 
 		    $scope.bpForm.$setPristine();
 		});
 
 	    this.bpr = {};
     
     };
-});
+})
 
-app.directive("bpNav", function(){
-
-	var controller = ['$scope', function($scope){
-		$scope.tab = 1;
-		$scope.navbarCollapsed = true;
-		$scope.setTab = function(newTab){
-			this.tab = newTab;
-		};
-		$scope.isSet = function(tab){
-			return tab === this.tab;
-		};
-		$scope.isCollapsed = function(){
-			return $scope.navbarCollapsed;
-		};
-    }];
+.directive("bpNav", function(){
 
 	return{
 		restrict: 'E',
-		templateUrl: '/assets/templates/bpnav.htm',
-		controller:controller
+		templateUrl: '/directives/bpnav.htm'
 	};
-});
+})
 
-app.directive('addBp', function(){
+.directive('addBp', function(){
 	return{
 		restrict: 'E',
-		templateUrl: '/assets/templates/addbp.htm'
+		templateUrl: '/directives/addbp.htm'
 	};
-});
+})
 
-app.directive('bpList', function(){
-	return{
-		restrict: 'E',
-		templateUrl: '/assets/templates/bplist.htm'
-	};
-});
+.directive('bpList', function(){
 
-
-app.directive('bpRecord', function(){
-	var controller = ['$http', '$scope', function($http, $scope){
-            this.records = [];
-
-            $http.get("/recentrecords").then(function(response){
-                $scope.records = response.data;
-            });
+	var controller = ['$http', '$scope', '$attrs', function($http, $scope, $attrs){
+            
+            this.getRecords= function(){
+            	$http.get("/records/" + $attrs.tpe).then(function(response){
+                	$scope.records = response.data;
+            	});
+        	};
         }];
+
 	return{
 		restrict: 'E',
-		templateUrl: '/assets/templates/bprecord.htm',
+		templateUrl: '/directives/bplist.htm',
 		controller: controller
+	};
+})
+
+.directive('bpRecords', function(){
+
+	return{
+		restrict: 'E',
+		templateUrl: '/directives/bprecords.htm',
+        require: "^bpList",
+        link: function(scope, element, attrs, parentController){
+  			parentController.getRecords();
+		}
 	};
 });
 

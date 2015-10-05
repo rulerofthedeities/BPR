@@ -18,11 +18,12 @@ var records = [
 	{sys:121, dia:82, pulse: 60, dtSubmit: new Date(2015, 9, 28, 10, 06)}, 
 	{sys:135, dia:92, pulse: 65, dtSubmit: new Date(2015, 9, 27, 09, 12)}];
 
-app.get('/recentrecords', function(request, response){
-	//return records
+app.get('/records/:tpe', function(request, response){
+	var tpe = request.params.tpe || "all";
+	//todo: Get records, limit depending on tpe
     response.json(records);
-});
-app.post('/submitBP', function(request, response){
+})
+.post('/submitBP', function(request, response){
 	//todo: add to database
 	var newRecord = request.body;
 	newRecord.dtSubmit = new Date();
