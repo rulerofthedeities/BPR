@@ -21,10 +21,12 @@ body{
 	color: #999;
 }
 .ng-valid.ng-dirty{
+	border-color:green;
 	border-bottom-color:green;
 	border-bottom-width: 2px;
 }
 .ng-invalid.ng-dirty{
+	border-color:red;
 	border-bottom-color:red;
 	border-bottom-width: 2px;
 }

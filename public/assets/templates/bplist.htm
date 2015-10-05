@@ -5,5 +5,5 @@
 		<div class="col-xs-2">DIA <span class="unit">(mmHg)</span></div>
 		<div class="col-xs-2">Pulse <span class="unit">(/min)</span></div>
 	</div>
-	<bp-record></bp-record>
+	<bp-record list="{{isSet(2) && 'all' || 'recent' }}"></bp-record>
 </div>

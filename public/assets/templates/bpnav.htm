@@ -13,15 +13,12 @@
     <!-- Collection of nav links -->
     <div class="collapse navbar-collapse" ng-class="{'in':!isCollapsed()}">
         <ul class="nav navbar-nav">
-            <li ng-class="{'active':isSet(1)}"><a href="#" ng-click="setTab(1)">Add New Record</a></li>
-            <li ng-class="{'active':isSet(2)}"><a href="#" ng-click="setTab(2)">All Records</a></li>
-            <li ng-class="{'active':isSet(3)}"><a href="#" ng-click="setTab(3)">Charts</a></li>
+            <li ng-class="{'active':isSet(1)}"><a href="#/add" ng-click="setTab(1)">Add New Record</a></li>
+            <li ng-class="{'active':isSet(2)}"><a href="#/all" ng-click="setTab(2)">All Records</a></li>
+            <li ng-class="{'active':isSet(3)}"><a href="#/charts" ng-click="setTab(3)">Charts</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right" ng-class="{'active':isSet(4)}">
             <li><a href="#" ng-click="setTab(4)">Login</a></li>
         </ul>
     </div>
 </nav>
-
-<add-bp ng-show="isSet(1)"></add-bp>
-<bp-list ng-show="isSet(1)"></bp-list>
