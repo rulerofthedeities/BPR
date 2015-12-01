@@ -1,6 +1,8 @@
 var express = require('express'),
 	app = express(),
-	bodyParser = require('body-parser');
+	bodyParser = require('body-parser'),
+	routes = require('./server/routes'),
+	db = require('./server/db');
 
 //config
 app.set('port', process.env.PORT || 3302);
@@ -12,27 +14,11 @@ app.get('/', function(request, response){
 	response.sendFile(__dirname + '/public/bpr.htm');
 });
 
-//original records
-var records = [
-	{sys:150, dia:80, pulse: 62, dtSubmit: new Date(2015, 9, 28, 22, 11)}, 
-	{sys:121, dia:82, pulse: 60, dtSubmit: new Date(2015, 9, 28, 10, 06)}, 
-	{sys:135, dia:92, pulse: 65, dtSubmit: new Date(2015, 9, 27, 09, 12)}];
+routes.initialize(app, new express.Router());
 
-app.get('/records/:tpe', function(request, response){
-	var tpe = request.params.tpe || "all";
-	//todo: Get records, limit depending on tpe
-    response.json(records);
-})
-.post('/submitBP', function(request, response){
-	//todo: add to database
-	var newRecord = request.body;
-	newRecord.dtSubmit = new Date();
-	records.unshift(newRecord);
-	response.status(201).json(newRecord);
-});
-
-//run server
-app.listen(app.get('port'), function() { 
-    console.log('Server up: http://localhost:' + app.get('port'));
+db.connect(function(){
+	app.listen(app.get('port'), function() { 
+	    console.log('Server up: http://localhost:' + app.get('port'));
+	});
 });
 
