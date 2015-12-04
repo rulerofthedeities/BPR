@@ -1,12 +1,14 @@
 angular.module("bpApp", ['ngRoute'])
 
+.constant("DEFAULTS", {"dir": "partials/directives/"})
+
 .config(function($routeProvider){
 	$routeProvider.when('/add', {
-		templateUrl: 'views/bpnew.htm'
+		templateUrl: 'partials/views/bpnew.htm'
 	}).when('/all', {
-		templateUrl: 'views/bplist.htm'
+		templateUrl: 'partials/views/bplist.htm'
 	}).when('/charts', {
-		templateUrl: 'views/bpcharts.htm'
+		templateUrl: 'partials/views/bpcharts.htm'
 	}).otherwise({redirectTo: '/add'});
 })
 
@@ -43,24 +45,24 @@ angular.module("bpApp", ['ngRoute'])
 	};
 })
 
-.directive("bpNav", function(){
+.directive("bpNav", function(DEFAULTS){
 	return{
 		restrict: 'E',
-		templateUrl: '/directives/bpnav.htm'
+		templateUrl: DEFAULTS.dir + 'bpnav.htm'
 	};
 })
 
-.directive('addBp', function(){
+.directive('addBp', function(DEFAULTS){
 	return{
 		restrict: 'E',
-		templateUrl: '/directives/addbp.htm'
+		templateUrl: DEFAULTS.dir + 'addbp.htm'
 	};
 })
 
-.directive('bpList', function(){
+.directive('bpList', function(DEFAULTS){
 	return{
 		restrict: 'E',
-		templateUrl: '/directives/bplist.htm',
+		templateUrl: DEFAULTS.dir + 'bplist.htm',
 		controller: function($scope, $attrs, bprecords){
             
             this.getRecords= function(){
@@ -72,11 +74,11 @@ angular.module("bpApp", ['ngRoute'])
 	};
 })
 
-.directive('bpRecords', function(){
+.directive('bpRecords', function(DEFAULTS){
 
 	return{
 		restrict: 'E',
-		templateUrl: '/directives/bprecords.htm',
+		templateUrl: DEFAULTS.dir + 'bprecords.htm',
         require: "^bpList",
         link: function(scope, element, attrs, parentController){
   			parentController.getRecords();
