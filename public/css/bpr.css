@@ -1,0 +1,36 @@
+body{
+	padding:10px 0;
+}
+
+.container{
+	max-width:960px;
+}
+.row > div{
+	border:1px dotted #ccc;
+	text-align: right;
+}
+.row > div:first-child{
+	text-align: left;
+}
+.row > div:empty:before {
+	content: "\2012";
+}
+.row.list-group-item  > div{
+	border:0;
+	font-weight: bold;
+	color: #999;
+}
+.ng-valid.ng-dirty{
+	border-color:green;
+	border-bottom-color:green;
+	border-bottom-width: 2px;
+}
+.ng-invalid.ng-dirty{
+	border-color:red;
+	border-bottom-color:red;
+	border-bottom-width: 2px;
+}
+.unit{
+	font-weight:normal;
+	color:#bbb;
+}
