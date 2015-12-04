@@ -10,33 +10,40 @@ angular.module("bpApp", ['ngRoute'])
 	}).otherwise({redirectTo: '/add'});
 })
 
-.controller("formController", function($scope, $http){
-    this.bpr = {};
-    this.submitBpr = function(bpr){
-    	//this.bpr.dtSubmit = new Date();
+.factory("bprecords", function($http){
 
-	    //Post new bpr
-	    var req = {
-			 method: 'POST',
-			 url: '/submitBP',
-			 headers: {
-			   'Content-Type': "application/json"
-			 },
-			 data: this.bpr
-			};
-		$http(req).then(function(response) {
-        	//update list
-		    $scope.records.unshift(response.data); 
-		    $scope.bpForm.$setPristine();
+	return {
+		"save": function(data){
+			var req = {
+				 method: 'POST',
+				 url: '/submitBP',
+				 headers: {
+				   'Content-Type': "application/json"
+				 },
+				 data: data
+				};
+			return $http(req);
+		},
+		"retrieve": function(tpe){
+            return $http.get("/getBP/" + tpe);
+		}
+	};
+})
+
+.controller("formController", function($scope, bprecords){
+	this.bpr = {};
+
+	this.submitBpr = function(bpr){
+		bprecords.save(this.bpr).then(function(response) {
+			//update list
+			$scope.records.unshift(response.data); 
+			$scope.bpForm.$setPristine();
 		});
-
-	    this.bpr = {};
-    
-    };
+		this.bpr = {};
+	};
 })
 
 .directive("bpNav", function(){
-
 	return{
 		restrict: 'E',
 		templateUrl: '/directives/bpnav.htm'
@@ -51,20 +58,17 @@ angular.module("bpApp", ['ngRoute'])
 })
 
 .directive('bpList', function(){
-
-	var controller = ['$http', '$scope', '$attrs', function($http, $scope, $attrs){
-            
-            this.getRecords= function(){
-            	$http.get("/records/" + $attrs.tpe).then(function(response){
-                	$scope.records = response.data;
-            	});
-        	};
-        }];
-
 	return{
 		restrict: 'E',
 		templateUrl: '/directives/bplist.htm',
-		controller: controller
+		controller: function($scope, $attrs, bprecords){
+            
+            this.getRecords= function(){
+            	bprecords.retrieve($attrs.tpe).then(function(response){
+                	$scope.records = response.data;
+            	});
+        	};
+        }
 	};
 })
 

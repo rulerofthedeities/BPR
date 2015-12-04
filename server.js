@@ -6,6 +6,7 @@ var express = require('express'),
 
 //config
 app.set('port', process.env.PORT || 3302);
+app.set('maxRecordsPerPage', 100);
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 
