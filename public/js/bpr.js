@@ -2,6 +2,11 @@ angular.module("bpApp", ['ngRoute'])
 
 .constant("DEFAULTS", {"dir": "partials/directives/"})
 
+.value("limits", 
+		{"sys": {"min": 140, "max": 150}},
+		{"dia": {"min": 80, "max": 90}}
+)
+
 .config(function($routeProvider){
 	$routeProvider.when('/add', {
 		templateUrl: 'partials/views/bpnew.htm'
@@ -66,7 +71,7 @@ angular.module("bpApp", ['ngRoute'])
 	return{
 		restrict: 'E',
 		templateUrl: DEFAULTS.dir + 'bprecords.htm',
-		controller: function($scope, $attrs, bprecords){
+		controller: function($scope, $attrs, bprecords, limits){
         	var currentEdit = null,
         		cancelRow = function(rowNo){
 					if (currentEdit && currentEdit.no !== rowNo){
@@ -76,6 +81,7 @@ angular.module("bpApp", ['ngRoute'])
 				};
 
         	$scope.editRowNo = -1;
+        	$scope.limits = limits;
         	
         	bprecords.retrieve($attrs.tpe).then(function(response){
             	$scope.records = response.data;

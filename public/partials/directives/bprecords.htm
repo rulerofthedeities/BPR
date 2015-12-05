@@ -6,14 +6,14 @@
 		<th class="text-center">Pulse <span class="unit">(/min)</span></th>
 		<th> </th>
 	</thead>
-	<tbody>
+	<tbody>		
 		<tr ng-repeat="record in records track by $index">
 			<td class="text-center">{{record.dtSubmit | date:'yy-MM-dd HH:mm'}}</td>
-			<td class="text-center" ng-class="{'bg-success': record.sys < 141, 'text-success': record.sys < 141, 'bg-danger':record.sys > 149, 'text-danger':record.sys > 149}">
+			<td class="text-center" ng-class="{'bg-success': record.sys <= limits.sys.min, 'text-success': record.sys <= limits.sys.min, 'bg-danger':record.sys >= limits.sys.max, 'text-danger':record.sys >= limits.sys.max}">
 				<span ng-show="editRowNo!=$index" ng-bind="record.sys"></span>
 				<span ng-show="editRowNo==$index"><input ng-model="record.sys"></span>
 			</td>
-			<td class="text-center" ng-class="{'bg-success': record.dia < 81, 'text-success': bpr.dia < 90, 'bg-danger':record.dia > 90, 'text-danger':record.dia > 89}">
+			<td class="text-center" ng-class="{'bg-success': record.dia <= limits.dia.min, 'text-success': bpr.dia < limits.dia.max, 'bg-danger':record.dia >= 90, 'text-danger':record.dia >= limits.dia.max}">
 				<span ng-show="editRowNo!=$index" ng-bind="record.dia"></span>
 				<span ng-show="editRowNo==$index"><input ng-model="record.dia"></span>
 			</td>
