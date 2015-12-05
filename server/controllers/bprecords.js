@@ -24,10 +24,30 @@ var loadBPR = function(db, options, callback){
 	    });
 };
 
+var updateBPR = function(db, data, callback){
+	var id = new mongo.ObjectID(data._id);
+
+	db.collection('bp').updateOne(
+		{_id: id}, 
+		{$set: {
+			dtUpdated: Date.Now, 
+			sys:data.sys,
+			dia:data.dia,
+			pulse:data.pulse}
+		}, 
+		function(err, r){
+			assert.equal(null, err);
+		}
+	);
+
+	callback();
+};
+
 module.exports = {
 	save: function(req, res){
 		var newRecord = req.body;
 		newRecord.dtSubmit = new Date();
+		newRecord.dt = new Date();
 
 		saveBPR(mongo.DB, newRecord, function(result){
 			res.status(201).json(newRecord);
@@ -39,6 +59,11 @@ module.exports = {
 
 		loadBPR(mongo.DB, {'tpe':tpe, 'max':max}, function(records){
 			res.status(200).send(records);
+		});
+	},
+	update: function(req, res){
+		updateBPR(mongo.DB, req.body, function(){
+			res.status(200);
 		});
 	}
 };

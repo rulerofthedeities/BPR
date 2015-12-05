@@ -34,3 +34,18 @@ body{
 	font-weight:normal;
 	color:#bbb;
 }
+
+/* List */
+
+table .fa {
+	font-size:16px;
+	padding: 0 4px;
+}
+.fa-check{color:green;}
+.fa-times{color:red;}
+table#records input{
+	width:60px;
+}
+table#records .fa{
+	cursor:pointer;
+}

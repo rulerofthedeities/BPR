@@ -1,8 +1,36 @@
-<div class="table">
-	<div ng-repeat="bpr in records" class="row">
-		<div class="col-xs-6">{{bpr.dtSubmit | date:'yy-MM-dd HH:mm'}}</div>
-		<div class="col-xs-2" ng-class="{'bg-success': bpr.sys < 141, 'text-success': bpr.sys < 141, 'bg-danger':bpr.sys > 149, 'text-danger':bpr.sys > 149}">{{bpr.sys}}</div>
-		<div class="col-xs-2" ng-class="{'bg-success': bpr.dia < 81, 'text-success': bpr.dia < 90, 'bg-danger':bpr.dia > 90, 'text-danger':bpr.dia > 89}">{{bpr.dia}}</div>
-		<div class="col-xs-2">{{bpr.pulse}}</div>
-	</div>
-</div>
+<table id="records" class="table table-bordered table-hover table-condensed">
+	<thead>
+		<th class="text-center">Date</th>
+		<th class="text-center">SYS <span class="unit">(mmHg)</span></th>
+		<th class="text-center">DIA <span class="unit">(mmHg)</span></th>
+		<th class="text-center">Pulse <span class="unit">(/min)</span></th>
+		<th> </th>
+	</thead>
+	<tbody>
+		<tr ng-repeat="record in records track by $index">
+			<td class="text-center">{{record.dtSubmit | date:'yy-MM-dd HH:mm'}}</td>
+			<td class="text-center" ng-class="{'bg-success': record.sys < 141, 'text-success': record.sys < 141, 'bg-danger':record.sys > 149, 'text-danger':record.sys > 149}">
+				<span ng-show="editRowNo!=$index" ng-bind="record.sys"></span>
+				<span ng-show="editRowNo==$index"><input ng-model="record.sys"></span>
+			</td>
+			<td class="text-center" ng-class="{'bg-success': record.dia < 81, 'text-success': bpr.dia < 90, 'bg-danger':record.dia > 90, 'text-danger':record.dia > 89}">
+				<span ng-show="editRowNo!=$index" ng-bind="record.dia"></span>
+				<span ng-show="editRowNo==$index"><input ng-model="record.dia"></span>
+			</td>
+			<td class="text-center">
+				<span ng-show="editRowNo!=$index" ng-bind="record.pulse"></span>
+				<span ng-show="editRowNo==$index"><input ng-model="record.pulse"></span>
+			</td>
+			<td class="text-center">
+				<span ng-show="editRowNo!=$index">
+					<i class="fa fa-pencil" ng-click="editRow($index)"></i>&nbsp;
+					<i class="fa fa-trash" ng-click="deleteRow($index)"></i>
+				</span>
+				<span ng-show="editRowNo==$index">
+					<i class="fa fa-check" ng-click="submitEdit($index)"></i>&nbsp;
+					<i class="fa fa-times" ng-click="cancelEdit($index)"></i>
+				</span>
+			</td>
+		</tr>
+	</tbody>
+</table>
