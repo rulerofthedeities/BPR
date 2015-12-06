@@ -40,19 +40,6 @@ angular.module("bpApp", ['ngRoute'])
 	};
 })
 
-.controller("formController", function($scope, bprecords){
-	this.bpr = {};
-
-	this.submitBpr = function(bpr){
-		bprecords.save(this.bpr).then(function(response) {
-			//update list
-			$scope.records.unshift(response.data); 
-			$scope.bpForm.$setPristine();
-		});
-		this.bpr = {};
-	};
-})
-
 .directive("bpNav", function(DEFAULTS){
 	return{
 		restrict: 'E',
@@ -63,7 +50,20 @@ angular.module("bpApp", ['ngRoute'])
 .directive('addBp', function(DEFAULTS){
 	return{
 		restrict: 'E',
-		templateUrl: DEFAULTS.dir + 'addbp.htm'
+		templateUrl: DEFAULTS.dir + 'addbp.htm',
+		controllerAs: 'ctrl',
+		controller: function($scope, bprecords){
+			this.bpr = {};
+
+			this.submitBpr = function(bpr){
+				bprecords.save(this.bpr).then(function(response) {
+					//update list
+					$scope.records.unshift(response.data); 
+					$scope.bpForm.$setPristine();
+				});
+				this.bpr = {};
+			};
+		}
 	};
 })
 
@@ -71,14 +71,16 @@ angular.module("bpApp", ['ngRoute'])
 	return{
 		restrict: 'E',
 		templateUrl: DEFAULTS.dir + 'bprecords.htm',
-		controller: function($scope, $attrs, bprecords, limits){
+		controller: function($scope, $window, $attrs, bprecords, limits){
         	var currentEdit = null,
-        		cancelRow = function(rowNo){
-					if (currentEdit && currentEdit.no !== rowNo){
-						//Previous edit not submitted, cancel
-						$scope.cancelEdit(currentEdit.no);
-					}
-				};
+        		cancelRow;
+
+			cancelRow = function(rowNo){
+				if (currentEdit && currentEdit.no !== rowNo){
+					//Previous edit not submitted, cancel
+					$scope.cancelEdit(currentEdit.no);
+				}
+			};
 
         	$scope.editRowNo = -1;
         	$scope.limits = limits;
@@ -97,15 +99,22 @@ angular.module("bpApp", ['ngRoute'])
 				//TODO:prompt and submit to database
 			};
 			$scope.submitEdit = function(rowNo){
-				//TODO:submit to database
 				bprecords.update($scope.records[rowNo]);
 				$scope.editRowNo = -1;
 			};
 			$scope.cancelEdit = function(rowNo){
-				$scope.records[rowNo] = currentEdit.data;
-				$scope.editRowNo = -1;
-				currentEdit = null;
+				if (currentEdit){
+					$scope.records[rowNo] = currentEdit.data;
+					$scope.editRowNo = -1;
+					currentEdit = null;
+				}
 			};
-        }
-	};
+			$window.onkeydown = function(event) {
+				if (event.which === 27){//ESC
+					$scope.cancelEdit($scope.editRowNo);
+					$scope.$apply();
+				}
+			};
+		}
+    };
 });
