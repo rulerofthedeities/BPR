@@ -2,7 +2,7 @@
 	<form name="bpForm" class="form-inline" ng-submit="bpForm.$valid && ctrl.submitBpr(ctrl.bpr)" novalidate>
 		<div class="input-group">
 		    <label class="sr-only" for="sys">SYS</label>
-        	<input type="text" id="sys" class="form-control" ng-model="ctrl.bpr.sys" placeholder="SYS" pattern="^\d{2,3}$" required>
+        	<input type="text" id="sys" class="form-control" ng-model="ctrl.bpr.sys" placeholder="SYS" pattern="^\d{2,3}$" autofocus required>
         	<span class="input-group-addon">mmHg</span>
         </div>
 		<div class="input-group">

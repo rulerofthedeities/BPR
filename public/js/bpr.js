@@ -2,9 +2,13 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 
 .constant("DEFAULTS", {"dir": "partials/directives/"})
 
-.value("limits", 
-		{"sys": {"min": 140, "max": 150}},
-		{"dia": {"min": 80, "max": 90}}
+.value("settings", {
+	"limits": {
+		"sys": {"min": 140, "max": 150},
+		"dia": {"min": 80, "max": 90}
+	},
+	"rowsPerPage" : 10
+}
 )
 
 .config(function($routeProvider){
@@ -95,7 +99,7 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 	};
 })
 
-.directive('addBp', function(DEFAULTS){
+.directive('addBp', function(DEFAULTS, settings){
 	return{
 		restrict: 'E',
 		templateUrl: DEFAULTS.dir + 'addbp.htm',
@@ -106,7 +110,8 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 			this.submitBpr = function(bpr){
 				bprecords.save(this.bpr).then(function(response) {
 					//update list
-					$scope.records.unshift(response.data); 
+					$scope.records.unshift(response.data);
+					$scope.records = $scope.records.splice(0, settings.rowsPerPage); 
 					$scope.bpForm.$setPristine();
 				});
 				this.bpr = {};
@@ -119,7 +124,7 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 	return{
 		restrict: 'E',
 		templateUrl: DEFAULTS.dir + 'bprecords.htm',
-		controller: function($scope, $window, $attrs, modalService, bprecords, limits){
+		controller: function($scope, $window, $attrs, modalService, bprecords, settings){
         	var currentEdit = null,
         		cancelRow;
 
@@ -131,7 +136,7 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 			};
 
         	$scope.editRowNo = -1;
-        	$scope.limits = limits;
+        	$scope.limits = settings.limits;
         	
         	bprecords.retrieve($attrs.tpe).then(function(response){
             	$scope.records = response.data;
@@ -176,7 +181,7 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 				}
 			};
 			$window.onkeydown = function(event) {
-				if (event.which === 27){//ESC
+				if (event.which === 27){ //ESC
 					$scope.cancelEdit($scope.editRowNo);
 					$scope.$apply();
 				}
