@@ -25,10 +25,10 @@ var loadBPR = function(db, options, callback){
 };
 
 var updateBPR = function(db, data, callback){
-	var id = new mongo.ObjectID(data._id);
+	var mongoId = new mongo.ObjectID(data._id);
 
 	db.collection('bp').updateOne(
-		{_id: id}, 
+		{_id: mongoId}, 
 		{$set: {
 			dtUpdated: Date.Now, 
 			sys:data.sys,
@@ -39,6 +39,16 @@ var updateBPR = function(db, data, callback){
 			assert.equal(null, err);
 		}
 	);
+
+	callback();
+};
+
+var deleteBPR = function(db, id, callback){
+	var mongoId = new mongo.ObjectID(id);
+
+	db.collection('bp').deleteOne({_id:mongoId}, function(err, r) {
+      assert.equal(null, err);
+  	});
 
 	callback();
 };
@@ -65,5 +75,14 @@ module.exports = {
 		updateBPR(mongo.DB, req.body, function(){
 			res.status(200);
 		});
+	},
+	delete: function(req, res){
+		if (req.query && req.query.id){
+			deleteBPR(mongo.DB, req.query.id, function(){
+				res.status(204);
+			});
+		} else {
+			res.status(404);
+		}
 	}
 };

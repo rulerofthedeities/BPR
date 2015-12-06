@@ -1,4 +1,4 @@
-angular.module("bpApp", ['ngRoute'])
+angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 
 .constant("DEFAULTS", {"dir": "partials/directives/"})
 
@@ -23,7 +23,7 @@ angular.module("bpApp", ['ngRoute'])
 		"save": function(data){
 			var req = {
 				 method: 'POST',
-				 url: '/submitBP',
+				 url: '/bpr',
 				 headers: {
 				   'Content-Type': "application/json"
 				 },
@@ -32,11 +32,59 @@ angular.module("bpApp", ['ngRoute'])
 			return $http(req);
 		},
 		"retrieve": function(tpe){
-            return $http.get("/getBP/" + tpe);
+            return $http.get("/bpr/" + tpe);
 		},
 		"update": function(data){
-			return $http.put("/updateBP", data);
+			return $http.put("/bpr", data);
+		},
+		"delete": function(data){
+			var id = data._id;
+			return $http.delete("/bpr?id=" + id);
 		}
+	};
+})
+
+.service('modalService', function ($uibModal) {
+
+    var modalDefaults = {
+        backdrop: true,
+        keyboard: true,
+        modalFade: true,
+        templateUrl: '/partials/modals/confirm.htm'
+    };
+
+    var modalOptions = {
+        closeButtonText: 'Close',
+        actionButtonText: 'OK',
+        headerText: 'Delete?',
+        bodyText: 'Are you sure you want to delete this record?'
+    };
+
+    this.showModal = function (customModalDefaults, customModalOptions) {
+		if (!customModalDefaults) {
+			customModalDefaults = {};
+		}
+		customModalDefaults.backdrop = 'static';
+
+		var tempModalDefaults = {};
+		var tempModalOptions = {};
+
+		angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
+		angular.extend(tempModalOptions, modalOptions, customModalOptions);
+
+		if (!tempModalDefaults.controller) {
+			tempModalDefaults.controller = function ($scope, $uibModalInstance) {
+				$scope.modalOptions = tempModalOptions;
+				$scope.modalOptions.ok = function (result) {
+					$uibModalInstance.close(result);
+				};
+				$scope.modalOptions.close = function (result) {
+					$uibModalInstance.dismiss('cancel');
+				};
+			};
+		}
+
+		return $uibModal.open(tempModalDefaults).result;
 	};
 })
 
@@ -71,7 +119,7 @@ angular.module("bpApp", ['ngRoute'])
 	return{
 		restrict: 'E',
 		templateUrl: DEFAULTS.dir + 'bprecords.htm',
-		controller: function($scope, $window, $attrs, bprecords, limits){
+		controller: function($scope, $window, $attrs, modalService, bprecords, limits){
         	var currentEdit = null,
         		cancelRow;
 
@@ -97,6 +145,19 @@ angular.module("bpApp", ['ngRoute'])
 			$scope.deleteRow = function(rowNo){
 				cancelRow(rowNo);
 				//TODO:prompt and submit to database
+				var modalOptions = {
+					closeButtonText: 'Cancel',
+					actionButtonText: 'Delete record',
+					headerText: 'Delete?',
+					bodyText: 'Are you sure you want to delete this record?'
+				};
+
+				modalService.showModal({}, modalOptions).then(function (result) {
+					console.log("delete");
+					bprecords.delete($scope.records[rowNo]);
+					$scope.records.splice(rowNo, 1);
+					$scope.editRowNo = -1;
+				});
 			};
 			$scope.submitEdit = function(rowNo){
 				bprecords.update($scope.records[rowNo]);
@@ -107,6 +168,11 @@ angular.module("bpApp", ['ngRoute'])
 					$scope.records[rowNo] = currentEdit.data;
 					$scope.editRowNo = -1;
 					currentEdit = null;
+				}
+			};
+			$scope.onKeyPressed = function(event){
+				if (event.which === 13){ //Enter
+					$scope.submitEdit($scope.editRowNo);
 				}
 			};
 			$window.onkeydown = function(event) {

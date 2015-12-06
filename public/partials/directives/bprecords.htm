@@ -6,7 +6,7 @@
 		<th class="text-center">Pulse <span class="unit">(/min)</span></th>
 		<th> </th>
 	</thead>
-	<tbody>		
+	<tbody ng-keypress="onKeyPressed($event)">		
 		<tr ng-repeat="record in records track by $index">
 			<td class="text-center">{{record.dtSubmit | date:'yy-MM-dd HH:mm'}}</td>
 			<td class="text-center" ng-class="{'bg-success': record.sys <= limits.sys.min, 'text-success': record.sys <= limits.sys.min, 'bg-danger':record.sys >= limits.sys.max, 'text-danger':record.sys >= limits.sys.max}">
