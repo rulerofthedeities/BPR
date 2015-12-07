@@ -35,8 +35,8 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 				};
 			return $http(req);
 		},
-		"retrieve": function(tpe){
-            return $http.get("/bpr/" + tpe);
+		"retrieve": function(tpe, page){
+            return $http.get("/bpr/" + tpe + '?page=' + page);
 		},
 		"update": function(data){
 			return $http.put("/bpr", data);
@@ -48,7 +48,7 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 	};
 })
 
-.service('modalService', function ($uibModal) {
+.service('modal', function ($uibModal) {
 
     var modalDefaults = {
         backdrop: true,
@@ -124,9 +124,13 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 	return{
 		restrict: 'E',
 		templateUrl: DEFAULTS.dir + 'bprecords.htm',
-		controller: function($scope, $window, $attrs, modalService, bprecords, settings){
+		controller: function($scope, $window, $attrs, modal, bprecords, settings){
         	var currentEdit = null,
         		cancelRow;
+
+        	$scope.editRowNo = -1;
+        	$scope.limits = settings.limits;
+        	$scope.tpe = $attrs.tpe;
 
 			cancelRow = function(rowNo){
 				if (currentEdit && currentEdit.no !== rowNo){
@@ -135,21 +139,17 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 				}
 			};
 
-        	$scope.editRowNo = -1;
-        	$scope.limits = settings.limits;
-        	
-        	bprecords.retrieve($attrs.tpe).then(function(response){
-            	$scope.records = response.data;
-        	});
-
 			$scope.editRow = function(rowNo){
 				cancelRow(rowNo);
-				currentEdit = {"data":angular.copy($scope.records[rowNo]), "no": rowNo};
+				currentEdit = {
+					"data":angular.copy($scope.records[rowNo]), 
+					"no": rowNo
+				};
 				$scope.editRowNo = rowNo;
 			};
 			$scope.deleteRow = function(rowNo){
 				cancelRow(rowNo);
-				//TODO:prompt and submit to database
+
 				var modalOptions = {
 					closeButtonText: 'Cancel',
 					actionButtonText: 'Delete record',
@@ -157,8 +157,7 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 					bodyText: 'Are you sure you want to delete this record?'
 				};
 
-				modalService.showModal({}, modalOptions).then(function (result) {
-					console.log("delete");
+				modal.showModal({}, modalOptions).then(function (result) {
 					bprecords.delete($scope.records[rowNo]);
 					$scope.records.splice(rowNo, 1);
 					$scope.editRowNo = -1;
@@ -188,4 +187,31 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 			};
 		}
     };
-});
+})
+
+.directive("bpPager", function(DEFAULTS){
+	return{
+		restrict: 'E',
+		templateUrl: DEFAULTS.dir + 'pager.htm',
+		controller: function($scope, $location, $routeParams, bprecords){
+			var loadRows;
+
+			$scope.pager = {};
+        	$scope.pager.currentPage = 1;
+
+        	loadRows = function(page){
+				bprecords.retrieve('all', page).then(function(response){
+					$scope.records = response.data.records;
+					$scope.pager.totalNoOfRecords = response.data.total;
+				});
+			};
+
+			loadRows($scope.pager.currentPage);
+			
+			$scope.pager.pageChanged = function() {
+				loadRows($scope.pager.currentPage);
+			};
+		}
+	};
+})
+;

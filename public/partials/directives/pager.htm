@@ -1,0 +1,9 @@
+<div ng-show="tpe=='all'">
+	<uib-pagination 
+		direction-links="false" 
+		boundary-links="true"
+		total-items="pager.totalNoOfRecords" 
+		ng-model="pager.currentPage"
+		ng-change="pager.pageChanged()">
+	</uib-pagination>
+</div>

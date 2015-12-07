@@ -11,16 +11,19 @@ var saveBPR = function(db, data, callback){
 };
 
 var loadBPR = function(db, options, callback){
+	var collection = db.collection('bp'),
+		max = options.tpe === "add" ? Math.min(10, options.max) : options.max;
 
-	var max = options.tpe === "add" ? Math.min(10, options.max) : options.max;
-
-	db.collection('bp')
-		.find({})
+	collection.find({})
+		.skip(options.page * max)
 		.limit(max)
 		.sort({'dtSubmit':-1})
 		.toArray(function(err, docs) {
 			assert.equal(null, err);
-			callback(docs);
+			collection.count(function(err, count) {
+		        assert.equal(null, err);
+				callback(docs, count);
+			});
 	    });
 };
 
@@ -65,10 +68,12 @@ module.exports = {
 	},
 	load: function(req, res){
 		var tpe = req.params.tpe,
-			max = req.app.settings.maxRecordsPerPage;
+			max = req.app.settings.maxRecordsPerPage,
+			page = req.query.page;
 
-		loadBPR(mongo.DB, {'tpe':tpe, 'max':max}, function(records){
-			res.status(200).send(records);
+		page = page < 1 ? 0 : --page;
+		loadBPR(mongo.DB, {'tpe':tpe, 'max':max, 'page': page}, function(records, total){
+			res.status(200).send({"records" : records, "total": total});
 		});
 	},
 	update: function(req, res){

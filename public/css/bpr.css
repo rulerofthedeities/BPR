@@ -44,11 +44,18 @@ table .fa {
 .fa-times {
   color: red; }
 
+table#records {
+  margin-bottom: 3px; }
+
 table#records input {
   width: 60px; }
 
 table#records .fa {
   cursor: pointer; }
+
+/* Pager */
+.pagination {
+  margin: 0; }
 
 /* Attr: https://stackoverflow.com/users/1238019/zessx */
 /* Red */

@@ -43,9 +43,17 @@ table .fa {
 }
 .fa-check{color:green;}
 .fa-times{color:red;}
+table#records{
+	margin-bottom: 3px;
+}
 table#records input{
 	width:60px;
 }
 table#records .fa{
 	cursor:pointer;
+}
+
+/* Pager */
+.pagination{
+	margin: 0;
 }
