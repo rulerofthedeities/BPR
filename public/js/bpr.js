@@ -1,4 +1,4 @@
-angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
+angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 
 .constant("DEFAULTS", {"dir": "partials/directives/"})
 
@@ -193,7 +193,7 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 	return{
 		restrict: 'E',
 		templateUrl: DEFAULTS.dir + 'pager.htm',
-		controller: function($scope, $location, $routeParams, bprecords){
+		controller: function($scope, bprecords){
 			var loadRows;
 
 			$scope.pager = {};
@@ -215,3 +215,6 @@ angular.module("bpApp", ['ngRoute', 'ui.bootstrap'])
 	};
 })
 ;
+
+
+
