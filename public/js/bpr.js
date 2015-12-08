@@ -4,7 +4,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 
 .value("settings", {
 	"limits": {
-		"sys": {"min": 140, "max": 150},
+		"sys": {"min": 130, "max": 140},
 		"dia": {"min": 80, "max": 90}
 	},
 	"rowsPerPage" : 10
@@ -44,6 +44,82 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 		"delete": function(data){
 			var id = data._id;
 			return $http.delete("/bpr?id=" + id);
+		}
+	};
+})
+
+.factory("chart", function($http, settings){
+	return{
+		"fetchData": function(){
+			console.log("fetching data");
+            return $http.get("/bpr/chart");
+		},
+		"transpose": function(a){
+    		return Object.keys(a[0]).map(
+				function (c) { 
+					return a.map(function (r) { 
+						return r[c]; 
+					}); 
+				}
+        	);
+		},
+		"build": function(columnData){
+			var limits = settings.limits;
+			return c3.generate({
+				data: {
+		        x: 'x',
+					columns: columnData,
+					types: {
+						SYS: 'spline',
+						DIA: 'spline' ,
+						Pulse: 'spline' 
+					},
+  					hide: ['Pulse'],
+  					xFormat: '%Y-%m-%dT%H:%M:%S.%LZ'
+				},
+				axis: {
+					y: {
+						label: { 
+							text: 'mmHg',
+							position: 'outer-middle'
+						},
+			            max: 200,
+			            min: 20
+						},
+					x: {
+						type: 'timeseries',
+						tick: {
+							format: '%Y-%m-%d',
+							//format: function (x) { return x.getFullYear(); },
+							fit: true,
+							culling: {
+								max: 10 // the number of tick texts will be adjusted to less than this value
+							}
+						}
+					}
+				},
+				grid: {
+					x: {
+						show: false,
+						lines: [
+							{value: "2015-12-06T18:17:04.777Z", text: 'Test'},
+						]
+					},
+					y: {
+		            	show: true,
+						lines: [
+							{value: limits.sys.max, text: 'Max SYS', class:'maxsys'},
+							{value: limits.dia.max, text: 'max DIA', class:'maxdia'}
+							]
+					}
+				},
+				subchart: {
+					show: true,
+					size: {
+						height: 20
+					}
+				}
+			});
 		}
 	};
 })
@@ -214,7 +290,49 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 		}
 	};
 })
-;
+
+.directive("bpChart", function(DEFAULTS, chart){
+	return {
+		restrict:'E',
+		scope:'{scope:@}',
+		templateUrl: DEFAULTS.dir + 'bpchart.htm',
+		controller: function($scope){
+			var lines = {'SYS':true, 'DIA': true, 'Pulse':false},
+			chartData = [],
+			thisChart;
+
+			chart.fetchData().then(function(response){
+				var dbData = response.data.records;
+				//transpose data (swap columns and rows)
+				dbData = chart.transpose(dbData);
+				chartData.push(dbData[0]);
+				chartData[0].unshift("SYS");
+				chartData.push(dbData[1]);
+				chartData[1].unshift("DIA");
+				chartData.push(dbData[2]);
+				chartData[2].unshift("Pulse");
+				chartData.push(dbData[3]);
+				chartData[3].unshift("x");
+				console.log("chartData");
+				console.log(chartData);
+				
+				thisChart = chart.build(chartData);
+			});
+
+			$scope.lines = lines;
+			$scope.updateLines = function(){
+				angular.forEach($scope.lines, function(show, line) {
+					if (show) {
+						thisChart.show([line]);
+					} else {
+						thisChart.hide([line]);
+					}
+				});
+			};
+		}
+	};
+});
+
 
 
 

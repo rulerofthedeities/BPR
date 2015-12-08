@@ -14,17 +14,32 @@ var loadBPR = function(db, options, callback){
 	var collection = db.collection('bp'),
 		max = options.tpe === "add" ? Math.min(10, options.max) : options.max;
 
-	collection.find({})
-		.skip(options.page * max)
-		.limit(max)
-		.sort({'dtSubmit':-1})
-		.toArray(function(err, docs) {
-			assert.equal(null, err);
-			collection.count(function(err, count) {
-		        assert.equal(null, err);
-				callback(docs, count);
+	if (options.tpe == "chart"){
+		collection
+			.find({},{
+				'_id':false, 
+				'dia':true, 
+				'sys':true, 
+				'pulse':true,
+				'dt': true})
+			.sort({'dtSubmit':-1})
+			.toArray(function(err, docs) {
+				assert.equal(null, err);
+				callback(docs, 0);
 			});
-	    });
+	} else {
+		collection.find({})
+			.skip(options.page * max)
+			.limit(max)
+			.sort({'dtSubmit':-1})
+			.toArray(function(err, docs) {
+				assert.equal(null, err);
+				collection.count(function(err, count) {
+					assert.equal(null, err);
+					callback(docs, count);
+				});
+			});
+	}
 };
 
 var updateBPR = function(db, data, callback){

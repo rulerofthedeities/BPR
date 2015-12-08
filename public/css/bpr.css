@@ -57,6 +57,18 @@ table#records .fa {
 .pagination {
   margin: 0; }
 
+/*Charts */
+.c3-line-DIA, .c3-line-SYS {
+  stroke-width: 2px; }
+
+.c3-ygrid-line.maxdia line {
+  stroke: red;
+  stroke-width: 3px; }
+
+.c3-ygrid-line.maxsys line {
+  stroke: blue;
+  stroke-width: 3px; }
+
 /* Attr: https://stackoverflow.com/users/1238019/zessx */
 /* Red */
 /* Green * /

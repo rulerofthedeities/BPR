@@ -7,13 +7,16 @@ var gulp = require('gulp'),
 	},
 
 	vendorJS 	= [
-		config.bowerDir + 'angular/angular.js',
-		config.bowerDir + 'angular-route/angular-route.js',
-		config.bowerDir + 'angular-bootstrap/ui-bootstrap-tpls.js'],
+		config.bowerDir + 'angular/angular.min.js',
+		config.bowerDir + 'angular-route/angular-route.min.js',
+		config.bowerDir + 'angular-bootstrap/ui-bootstrap-tpls.min.js',
+		config.bowerDir + 'd3/d3.min.js',
+		config.bowerDir + 'c3/c3.min.js'],
 
 	vendorCSS 	= [
 		config.bowerDir + 'bootstrap/dist/css/bootstrap.min.css',
-		config.bowerDir + 'font-awesome/css/font-awesome.min.css'],
+		config.bowerDir + 'font-awesome/css/font-awesome.min.css',
+		config.bowerDir + 'c3/c3.css'],
 
 	vendorFonts = [
 		config.bowerDir + 'font-awesome/fonts/**.*',
