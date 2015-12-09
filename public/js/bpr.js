@@ -255,27 +255,28 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 				});
 			};
 			$scope.submitEdit = function(rowNo){
-				console.log($scope.dateEdit);
 				var dt = new Date($scope.dateEdit.date),
 					dtOriginal = new Date(currentEdit.data.dt),
-					originalTime = utils.getTime(dtOriginal);
+					originalTime = utils.getTime(dtOriginal),
+					dtupdated = false;
 
-				console.log($scope.records[rowNo]);
 				//Check if date or time was modified
 				if (currentEdit.data.dt !== dt.toISOString() || originalTime !== $scope.dateEdit.time){
-					console.log("date/time modified");
 					var time = $scope.dateEdit.time.split(":");
 					dt.setHours(time[0]);
 					dt.setMinutes(time[1]);
 					$scope.records[rowNo].dt = dt.toISOString();
+					dtupdated = true;
 				}
-				console.log($scope.records[rowNo]);
-
-				console.log("date saving");
-				console.log($scope.records[rowNo]);
 
 				bprecords.update($scope.records[rowNo]);
 				$scope.editRowNo = -1;
+
+				if (dtupdated){
+					bprecords.retrieve('all', $scope.pager.currentPage).then(function(response){
+						$scope.records = response.data.records;
+					});
+				}
 			};
 			$scope.cancelEdit = function(rowNo){
 				if (currentEdit){
@@ -331,18 +332,16 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 	thisChart;
 
 	chart.fetchData().then(function(response){
-		var dbData = response.data.records;
+		var dbData = response.data.records,
+			dataSet = ['SYS', 'DIA', 'Pulse', 'x'];
+
 		//transpose data (swap columns and rows)
 		dbData = utils.transpose(dbData);
-		chartData.push(dbData[0]);
-		chartData[0].unshift("SYS");
-		chartData.push(dbData[1]);
-		chartData[1].unshift("DIA");
-		chartData.push(dbData[2]);
-		chartData[2].unshift("Pulse");
-		chartData.push(dbData[3]);
-		chartData[3].unshift("x");
-		
+		for (var indx = 0; indx <= 3; indx++){
+			chartData.push(dbData[set[indx]]);
+			chartData[indx].unshift(dataSets[indx]);
+		}
+
 		thisChart = chart.build(chartData);
 	});
 
