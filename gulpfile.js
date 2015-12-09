@@ -7,7 +7,7 @@ var gulp = require('gulp'),
 	},
 
 	vendorJS 	= [
-		config.bowerDir + 'angular/angular.min.js',
+		config.bowerDir + 'angular/angular.js',
 		config.bowerDir + 'angular-route/angular-route.min.js',
 		config.bowerDir + 'angular-bootstrap/ui-bootstrap-tpls.min.js',
 		config.bowerDir + 'd3/d3.min.js',

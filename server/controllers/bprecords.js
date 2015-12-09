@@ -3,7 +3,7 @@ var mongo = require('mongodb'),
 
 var saveBPR = function(db, data, callback){
 	var collection = db.collection('bp');
-	
+
 	collection.insertOne(data, function (err, result){
 		assert.equal(err, null);
 		callback(result);
@@ -22,16 +22,21 @@ var loadBPR = function(db, options, callback){
 				'sys':true, 
 				'pulse':true,
 				'dt': true})
-			.sort({'dtSubmit':-1})
+			.sort({'dt':-1})
 			.toArray(function(err, docs) {
 				assert.equal(null, err);
 				callback(docs, 0);
 			});
 	} else {
-		collection.find({})
+		collection.find({},{
+				'dia':true, 
+				'sys':true, 
+				'pulse':true,
+				'dt': true,
+				'dtSubmit': true})
 			.skip(options.page * max)
 			.limit(max)
-			.sort({'dtSubmit':-1})
+			.sort({'dt':-1})
 			.toArray(function(err, docs) {
 				assert.equal(null, err);
 				collection.count(function(err, count) {
@@ -48,10 +53,11 @@ var updateBPR = function(db, data, callback){
 	db.collection('bp').updateOne(
 		{_id: mongoId}, 
 		{$set: {
-			dtUpdated: Date.Now, 
+			dtUpdated: new Date(), 
 			sys:data.sys,
 			dia:data.dia,
-			pulse:data.pulse}
+			pulse:data.pulse,
+			dt:new Date(data.dt)}
 		}, 
 		function(err, r){
 			assert.equal(null, err);

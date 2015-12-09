@@ -52,7 +52,13 @@ table#records input {
 
 table#records .fa {
   cursor: pointer; }
-
+th.edittime{
+  width:220px;
+}
+input.center{
+  display:block;
+  margin:0 auto;
+}
 /* Pager */
 .pagination {
   margin: 0; }

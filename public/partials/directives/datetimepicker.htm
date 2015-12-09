@@ -1,0 +1,28 @@
+ <p class="input-group">
+	<input type="text" 
+		name="date"
+		class="form-control" 
+		uib-datepicker-popup="{{format}}" 
+		ng-model="dateEdit.date" 
+		is-open="status.opened" 
+		style="width:90px"
+		max-date="maxDate" 
+		datepicker-options="dateOptions" 
+		date-disabled="disabled(date, mode)" 
+		ng-required="true" />
+	<input 
+		name="time"
+		type="text"
+		class="form-control" 
+		style="width:66px"
+		ng-model="dateEdit.time" 
+		ng-required="true">
+	<span class="input-group-btn">
+		<button 
+			type="button" 
+			class="btn btn-default" 
+			ng-click="open($event)">
+			<i class="fa fa-calendar"></i>
+		</button>
+	</span>
+</p>

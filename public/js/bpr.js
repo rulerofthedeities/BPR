@@ -21,6 +21,23 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 	}).otherwise({redirectTo: '/add'});
 })
 
+.factory("utils", function(){
+	return {
+		"transpose": function(a){
+			return Object.keys(a[0]).map(
+				function (c) { 
+					return a.map(function (r) { 
+						return r[c]; 
+					}); 
+				}
+			);
+		},
+		"getTime": function(dt){
+			return ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2);
+		}
+	};
+})
+
 .factory("bprecords", function($http){
 
 	return {
@@ -51,17 +68,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 .factory("chart", function($http, settings){
 	return{
 		"fetchData": function(){
-			console.log("fetching data");
             return $http.get("/bpr/chart");
-		},
-		"transpose": function(a){
-    		return Object.keys(a[0]).map(
-				function (c) { 
-					return a.map(function (r) { 
-						return r[c]; 
-					}); 
-				}
-        	);
 		},
 		"build": function(columnData){
 			var limits = settings.limits;
@@ -102,7 +109,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 					x: {
 						show: false,
 						lines: [
-							{value: "2015-12-06T18:17:04.777Z", text: 'Test'},
+							{value: "2014-06-06T18:17:04.777Z", text: 'Test'},
 						]
 					},
 					y: {
@@ -200,7 +207,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 	return{
 		restrict: 'E',
 		templateUrl: DEFAULTS.dir + 'bprecords.htm',
-		controller: function($scope, $window, $attrs, modal, bprecords, settings){
+		controller: function($scope, $window, $attrs, $filter, modal, bprecords, settings, utils){
         	var currentEdit = null,
         		cancelRow;
 
@@ -216,11 +223,19 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 			};
 
 			$scope.editRow = function(rowNo){
+				var dt = new Date($scope.records[rowNo].dt);
 				cancelRow(rowNo);
 				currentEdit = {
 					"data":angular.copy($scope.records[rowNo]), 
 					"no": rowNo
 				};
+
+				$scope.dateEdit = {
+					date: angular.copy($scope.records[rowNo].dt), 
+					time: utils.getTime(dt)
+				};
+
+
 				$scope.editRowNo = rowNo;
 			};
 			$scope.deleteRow = function(rowNo){
@@ -240,6 +255,25 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 				});
 			};
 			$scope.submitEdit = function(rowNo){
+				console.log($scope.dateEdit);
+				var dt = new Date($scope.dateEdit.date),
+					dtOriginal = new Date(currentEdit.data.dt),
+					originalTime = utils.getTime(dtOriginal);
+
+				console.log($scope.records[rowNo]);
+				//Check if date or time was modified
+				if (currentEdit.data.dt !== dt.toISOString() || originalTime !== $scope.dateEdit.time){
+					console.log("date/time modified");
+					var time = $scope.dateEdit.time.split(":");
+					dt.setHours(time[0]);
+					dt.setMinutes(time[1]);
+					$scope.records[rowNo].dt = dt.toISOString();
+				}
+				console.log($scope.records[rowNo]);
+
+				console.log("date saving");
+				console.log($scope.records[rowNo]);
+
 				bprecords.update($scope.records[rowNo]);
 				$scope.editRowNo = -1;
 			};
@@ -291,44 +325,83 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 	};
 })
 
-.directive("bpChart", function(DEFAULTS, chart){
-	return {
+.controller("chartController", function($scope, chart, utils){
+	var lines = {'SYS':true, 'DIA': true, 'Pulse':false},
+	chartData = [],
+	thisChart;
+
+	chart.fetchData().then(function(response){
+		var dbData = response.data.records;
+		//transpose data (swap columns and rows)
+		dbData = utils.transpose(dbData);
+		chartData.push(dbData[0]);
+		chartData[0].unshift("SYS");
+		chartData.push(dbData[1]);
+		chartData[1].unshift("DIA");
+		chartData.push(dbData[2]);
+		chartData[2].unshift("Pulse");
+		chartData.push(dbData[3]);
+		chartData[3].unshift("x");
+		
+		thisChart = chart.build(chartData);
+	});
+
+	$scope.lines = lines;
+	$scope.updateLines = function(){
+		angular.forEach($scope.lines, function(show, line) {
+			if (show) {
+				thisChart.show([line]);
+			} else {
+				thisChart.hide([line]);
+			}
+		});
+	};
+		
+})
+
+.directive("datetimePicker", function(DEFAULTS){
+	return{
 		restrict:'E',
-		scope:'{scope:@}',
-		templateUrl: DEFAULTS.dir + 'bpchart.htm',
-		controller: function($scope){
-			var lines = {'SYS':true, 'DIA': true, 'Pulse':false},
-			chartData = [],
-			thisChart;
-
-			chart.fetchData().then(function(response){
-				var dbData = response.data.records;
-				//transpose data (swap columns and rows)
-				dbData = chart.transpose(dbData);
-				chartData.push(dbData[0]);
-				chartData[0].unshift("SYS");
-				chartData.push(dbData[1]);
-				chartData[1].unshift("DIA");
-				chartData.push(dbData[2]);
-				chartData[2].unshift("Pulse");
-				chartData.push(dbData[3]);
-				chartData[3].unshift("x");
-				console.log("chartData");
-				console.log(chartData);
-				
-				thisChart = chart.build(chartData);
-			});
-
-			$scope.lines = lines;
-			$scope.updateLines = function(){
-				angular.forEach($scope.lines, function(show, line) {
-					if (show) {
-						thisChart.show([line]);
-					} else {
-						thisChart.hide([line]);
-					}
-				});
+		templateUrl: DEFAULTS.dir + 'datetimepicker.htm',
+		controller: 
+		function ($scope) {
+			
+			$scope.today = function() {
+				$scope.dt = new Date();
 			};
+
+			$scope.clear = function () {
+				$scope.dt = null;
+			};
+			$scope.clear();
+
+			$scope.maxDate = new Date();
+
+			$scope.open = function($event) {
+				$scope.status.opened = true;
+			};
+
+			$scope.dateOptions = {
+				formatYear: 'yy',
+				startingDay: 1
+			};
+
+			$scope.formats = ['dd/MM/yy'];
+			$scope.format = $scope.formats[0];
+
+			$scope.status = {
+				opened: false
+			};
+		}
+	};
+})
+
+.directive("timePicker", function(DEFAULTS){
+	return{
+		restrict:'E',
+		templateUrl: DEFAULTS.dir + 'timepicker.htm',
+		controller: function ($scope) {
+			
 		}
 	};
 });

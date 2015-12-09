@@ -1,7 +1,7 @@
 <bp-pager></bp-pager>
 <table id="records" class="table table-bordered table-hover table-condensed">
 	<thead>
-		<th class="text-center">Date</th>
+		<th class="text-center" ng-class="{'edittime': editRowNo >= 0}">Date</th>
 		<th class="text-center">SYS <span class="unit">(mmHg)</span></th>
 		<th class="text-center">DIA <span class="unit">(mmHg)</span></th>
 		<th class="text-center">Pulse <span class="unit">(/min)</span></th>
@@ -9,18 +9,29 @@
 	</thead>
 	<tbody ng-keypress="onKeyPressed($event)">		
 		<tr ng-repeat="record in records track by $index" ng-dblclick="editRow($index)">
-			<td class="text-center">{{record.dtSubmit | date:'yy-MM-dd HH:mm'}}</td>
+			<td class="text-center">
+				<span ng-show="editRowNo!=$index" ng-bind="record.dt| date:'dd-MM-yy HH:mm'"></span>
+				<span ng-show="editRowNo==$index">
+					<datetime-picker></datetime-picker>
+				</span>
+			</td>
 			<td class="text-center" ng-class="{'bg-success': record.sys <= limits.sys.min, 'text-success': record.sys <= limits.sys.min, 'bg-danger':record.sys >= limits.sys.max, 'text-danger':record.sys >= limits.sys.max}">
 				<span ng-show="editRowNo!=$index" ng-bind="record.sys"></span>
-				<span ng-show="editRowNo==$index"><input ng-model="record.sys"></span>
+				<span ng-show="editRowNo==$index">
+					<input class="form-control center" ng-model="record.sys">
+				</span>
 			</td>
 			<td class="text-center" ng-class="{'bg-success': record.dia <= limits.dia.min, 'text-success': bpr.dia < limits.dia.max, 'bg-danger':record.dia >= 90, 'text-danger':record.dia >= limits.dia.max}">
 				<span ng-show="editRowNo!=$index" ng-bind="record.dia"></span>
-				<span ng-show="editRowNo==$index"><input ng-model="record.dia"></span>
+				<span ng-show="editRowNo==$index">
+					<input class="form-control center" ng-model="record.dia">
+				</span>
 			</td>
 			<td class="text-center">
 				<span ng-show="editRowNo!=$index" ng-bind="record.pulse"></span>
-				<span ng-show="editRowNo==$index"><input ng-model="record.pulse"></span>
+				<span ng-show="editRowNo==$index">
+					<input class="form-control center" ng-model="record.pulse">
+				</span>
 			</td>
 			<td class="text-center">
 				<span ng-show="editRowNo!=$index">
