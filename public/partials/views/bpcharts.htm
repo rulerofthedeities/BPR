@@ -1,28 +1,59 @@
 <div ng-controller="chartController">
+
 	<form class="form-horizontal">
-		<div class="form-group">
-			<div class="col-sm-offset-1 col-sm-10 well">
-				<label class="checkbox-inline">
-					<input 
-						type="checkbox" 
-						value="sys" 
-						ng-model="lines.SYS" 
-						ng-change="updateLines()">SYS
-				</label>
-				<label class="checkbox-inline">
-					<input 
-						type="checkbox" 
-						value="dia" 
-						ng-model="lines.DIA" 
-						ng-change="updateLines()">DIA
-				</label>
-				<label class="checkbox-inline">
-					<input 
-						type="checkbox" 
-						value="pulse" 
-						ng-model="lines.Pulse" 
-						ng-change="updateLines()">Pulse
-				</label>
+  		<div class="form-group">
+			<div class="col-sm-6">
+				<div class="well">
+					<label class="checkbox-inline">
+						<input 
+							type="checkbox" 
+							value="sys" 
+							ng-model="lines.SYS" 
+							ng-change="updateLines()">SYS
+					</label>
+					<label class="checkbox-inline">
+						<input 
+							type="checkbox" 
+							value="dia" 
+							ng-model="lines.DIA" 
+							ng-change="updateLines()">DIA
+					</label>
+					<label class="checkbox-inline">
+						<input 
+							type="checkbox" 
+							value="pulse" 
+							ng-model="lines.Pulse" 
+							ng-change="updateLines()">Pulse
+					</label>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="well">
+					<label class="radiobox-inline">
+						<input 
+							type="radio" 
+							name="select"
+							ng-model="select" 
+							value="all"
+							ng-change="updateSelection()">All
+					</label>
+					<label class="radiobox-inline">
+						<input 
+							type="radio" 
+							name="select"
+							value="am" 
+							ng-model="select" 
+							ng-change="updateSelection()">AM
+					</label>
+					<label class="radiobox-inline">
+						<input 
+							type="radio" 
+							name="select"
+							value="pm" 
+							ng-model="select" 
+							ng-change="updateSelection()">PM
+					</label>
+				</div>
 			</div>
 		</div>
 	</form>

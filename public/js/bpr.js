@@ -74,7 +74,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 			var limits = settings.limits;
 			return c3.generate({
 				data: {
-		        x: 'x',
+		        	x: 'x',
 					columns: columnData,
 					types: {
 						SYS: 'spline',
@@ -329,6 +329,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 .controller("chartController", function($scope, chart, utils){
 	var lines = {'SYS':true, 'DIA': true, 'Pulse':false},
 	chartData = [],
+	srcChartData = [],
 	thisChart;
 
 	chart.fetchData().then(function(response){
@@ -338,14 +339,15 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 		//transpose data (swap columns and rows)
 		dbData = utils.transpose(dbData);
 		for (var indx = 0; indx <= 3; indx++){
-			chartData.push(dbData[set[indx]]);
-			chartData[indx].unshift(dataSets[indx]);
+			chartData.push(dbData[indx]);
+			chartData[indx].unshift(dataSet[indx]);
 		}
-
+		srcChartData = angular.copy(dbData); //for filtering
 		thisChart = chart.build(chartData);
 	});
 
 	$scope.lines = lines;
+
 	$scope.updateLines = function(){
 		angular.forEach($scope.lines, function(show, line) {
 			if (show) {
@@ -354,6 +356,26 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 				thisChart.hide([line]);
 			}
 		});
+	};
+
+	$scope.select = "all";
+
+	$scope.updateSelection = function(){
+		if ($scope.select !== "all"){
+			var dt;
+			chartData = [["SYS"],["DIA"],["Pulse"],["x"]];
+			for (indx = 1; indx < srcChartData[0].length; indx++){
+				dt = new Date(srcChartData[3][indx]);
+				if (($scope.select === "am" && dt.getHours() < 12) || ($scope.select === "pm" && dt.getHours() >= 12)){
+					for (var indy = 0; indy <= 3; indy++){
+						chartData[indy].push(srcChartData[indy][indx]);
+					}
+				}
+			} 
+		} else {
+			chartData = angular.copy(srcChartData);
+		}
+		thisChart.load({columns:chartData});
 	};
 		
 })
