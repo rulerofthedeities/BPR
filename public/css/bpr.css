@@ -19,16 +19,6 @@ body {
   font-weight: bold;
   color: #999; }
 
-.ng-valid.ng-dirty {
-  border-color: green;
-  border-bottom-color: green;
-  border-bottom-width: 2px; }
-
-.ng-invalid.ng-dirty {
-  border-color: red;
-  border-bottom-color: red;
-  border-bottom-width: 2px; }
-
 .unit {
   font-weight: normal;
   color: #bbb; }
@@ -52,13 +42,14 @@ table#records input {
 
 table#records .fa {
   cursor: pointer; }
-th.edittime{
-  width:220px;
-}
-input.center{
-  display:block;
-  margin:0 auto;
-}
+
+th.edittime {
+  width: 220px; }
+
+input.center {
+  display: block;
+  margin: 0 auto; }
+
 /* Pager */
 .pagination {
   margin: 0; }
@@ -74,6 +65,21 @@ input.center{
 .c3-ygrid-line.maxsys line {
   stroke: blue;
   stroke-width: 3px; }
+
+/* Validation */
+.ng-valid.ng-dirty {
+  border-color: green;
+  border-bottom-color: green;
+  border-bottom-width: 2px; }
+
+.ng-invalid.ng-dirty {
+  border-color: red;
+  border-bottom-color: red;
+  border-bottom-width: 2px; }
+
+table#records .fa-check.disabled {
+  color: #ccc;
+  cursor: default; }
 
 /* Attr: https://stackoverflow.com/users/1238019/zessx */
 /* Red */

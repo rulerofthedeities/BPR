@@ -1,7 +1,7 @@
 {
   "name": "bpr",
   "description": "Blood Pressure Records",
-  "main": "server.js",
+  "main": "",
   "authors": [
     "Kristiaan Van Ermengem"
   ],

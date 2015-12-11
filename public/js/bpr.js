@@ -260,6 +260,16 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 					originalTime = utils.getTime(dtOriginal),
 					dtupdated = false;
 
+				//Check if row data is valid
+				if ($scope.bpTableForm["date" + rowNo].$invalid || 
+					$scope.bpTableForm["time" + rowNo].$invalid || 
+					$scope.bpTableForm["sys" + rowNo].$invalid || 
+					$scope.bpTableForm["dia" + rowNo].$invalid || 
+					$scope.bpTableForm["pulse" + rowNo].$invalid
+				){
+					return;
+				}
+
 				//Check if date or time was modified
 				if (currentEdit.data.dt !== dt.toISOString() || originalTime !== $scope.dateEdit.time){
 					var time = $scope.dateEdit.time.split(":");

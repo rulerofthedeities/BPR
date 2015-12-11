@@ -1,49 +1,72 @@
 <bp-pager></bp-pager>
-<table id="records" class="table table-bordered table-hover table-condensed">
-	<thead>
-		<th class="text-center" ng-class="{'edittime': editRowNo >= 0}">Date</th>
-		<th class="text-center">SYS <span class="unit">(mmHg)</span></th>
-		<th class="text-center">DIA <span class="unit">(mmHg)</span></th>
-		<th class="text-center">Pulse <span class="unit">(/min)</span></th>
-		<th> </th>
-	</thead>
-	<tbody ng-keypress="onKeyPressed($event)">		
-		<tr ng-repeat="record in records track by $index" ng-dblclick="editRow($index)">
-			<td class="text-center">
-				<span ng-show="editRowNo!=$index" ng-bind="record.dt| date:'dd-MM-yy HH:mm'"></span>
-				<span ng-show="editRowNo==$index">
-					<datetime-picker></datetime-picker>
-				</span>
-			</td>
-			<td class="text-center" ng-class="{'bg-success': record.sys <= limits.sys.min, 'text-success': record.sys <= limits.sys.min, 'bg-danger':record.sys >= limits.sys.max, 'text-danger':record.sys >= limits.sys.max}">
-				<span ng-show="editRowNo!=$index" ng-bind="record.sys"></span>
-				<span ng-show="editRowNo==$index">
-					<input class="form-control center" ng-model="record.sys">
-				</span>
-			</td>
-			<td class="text-center" ng-class="{'bg-success': record.dia <= limits.dia.min, 'text-success': bpr.dia < limits.dia.max, 'bg-danger':record.dia >= 90, 'text-danger':record.dia >= limits.dia.max}">
-				<span ng-show="editRowNo!=$index" ng-bind="record.dia"></span>
-				<span ng-show="editRowNo==$index">
-					<input class="form-control center" ng-model="record.dia">
-				</span>
-			</td>
-			<td class="text-center">
-				<span ng-show="editRowNo!=$index" ng-bind="record.pulse"></span>
-				<span ng-show="editRowNo==$index">
-					<input class="form-control center" ng-model="record.pulse">
-				</span>
-			</td>
-			<td class="text-center">
-				<span ng-show="editRowNo!=$index">
-					<i class="fa fa-pencil" ng-click="editRow($index)"></i>&nbsp;
-					<i class="fa fa-trash" ng-click="deleteRow($index)"></i>
-				</span>
-				<span ng-show="editRowNo==$index">
-					<i class="fa fa-check" ng-click="submitEdit($index)"></i>&nbsp;
-					<i class="fa fa-times" ng-click="cancelEdit($index)"></i>
-				</span>
-			</td>
-		</tr>
-	</tbody>
-</table>
+<form name="bpTableForm">
+	<table id="records" class="table table-bordered table-hover table-condensed">
+		<thead>
+			<th class="text-center" ng-class="{'edittime': editRowNo >= 0}">Date</th>
+			<th class="text-center">SYS <span class="unit">(mmHg)</span></th>
+			<th class="text-center">DIA <span class="unit">(mmHg)</span></th>
+			<th class="text-center">Pulse <span class="unit">(/min)</span></th>
+			<th> </th>
+		</thead>
+		<tbody ng-keypress="onKeyPressed($event)">		
+			<tr ng-repeat="record in records track by $index" ng-dblclick="editRow($index)">
+				<td class="text-center">
+					<span ng-show="editRowNo!=$index" ng-bind="record.dt| date:'dd-MM-yy HH:mm'"></span>
+					<span ng-show="editRowNo==$index">
+						<datetime-picker></datetime-picker>
+					</span>
+				</td>
+				<td class="text-center" ng-class="{'bg-success': record.sys <= limits.sys.min, 'text-success': record.sys <= limits.sys.min, 'bg-danger':record.sys >= limits.sys.max, 'text-danger':record.sys >= limits.sys.max}">
+					<span ng-show="editRowNo!=$index" ng-bind="record.sys"></span>
+					<span ng-show="editRowNo==$index">
+						<input
+							type="text" 
+							name="sys{{$index}}"
+							class="form-control center" 
+							ng-model="record.sys"
+							ng-pattern="/^\d{2,3}$/" 
+							required>
+					</span>
+				</td>
+				<td class="text-center" ng-class="{'bg-success': record.dia <= limits.dia.min, 'text-success': bpr.dia < limits.dia.max, 'bg-danger':record.dia >= 90, 'text-danger':record.dia >= limits.dia.max}">
+					<span ng-show="editRowNo!=$index" ng-bind="record.dia"></span>
+					<span ng-show="editRowNo==$index">
+						<input
+							type="text" 
+							name="dia{{$index}}"
+							class="form-control center" 
+							ng-model="record.dia"
+							ng-pattern="/^\d{2,3}$/" 
+							required>
+					</span>
+				</td>
+				<td class="text-center">
+					<span ng-show="editRowNo!=$index" ng-bind="record.pulse"></span>
+					<span ng-show="editRowNo==$index">
+						<input 
+							type="text" 
+							name="pulse{{$index}}"
+							class="form-control center" 
+							ng-model="record.pulse" 
+							ng-pattern="/^\d{2,3}$/" 
+							required>
+					</span>
+				</td>
+				<td class="text-center">
+					<span ng-show="editRowNo!=$index">
+						<i class="fa fa-pencil" ng-click="editRow($index)"></i>&nbsp;
+						<i class="fa fa-trash" ng-click="deleteRow($index)"></i>
+					</span>
+					<span ng-show="editRowNo==$index">
+						<i 
+							class="fa fa-check" 
+							ng-click="submitEdit($index)" 
+							ng-class="{'disabled':bpTableForm.date{{$index}}.$invalid || bpTableForm.time{{$index}}.$invalid || bpTableForm.sys{{$index}}.$invalid || bpTableForm.dia{{$index}}.$invalid || bpTableForm.pulse{{$index}}.$invalid}"></i>&nbsp;
+						<i class="fa fa-times" ng-click="cancelEdit($index)"></i>
+					</span>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</form>
 <bp-pager></bp-pager>
