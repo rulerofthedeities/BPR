@@ -72,7 +72,6 @@ var updateBPR = function(db, data, callback){
 var updateNote = function(db, data, callback){
 	var mongoId = new mongo.ObjectID(data._id);
 
-	console.log("updating note");
 	db.collection('bp').updateOne(
 		{_id: mongoId}, 
 		{$set: {

@@ -33,6 +33,9 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 		},
 		"getTime": function(dt){
 			return ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2);
+		},
+		"getDate": function(dt){
+			return ('0' + dt.getDate()).slice(-2) + '/' + ("0" + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getYear()).slice(-2);
 		}
 	};
 })
@@ -234,7 +237,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 				};
 
 				$scope.dateEdit = {
-					date: angular.copy($scope.records[rowNo].dt), 
+					date: utils.getDate(dt), 
 					time: utils.getTime(dt)
 				};
 
