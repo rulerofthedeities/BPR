@@ -8,8 +8,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 		"dia": {"min": 80, "max": 90}
 	},
 	"rowsPerPage" : 10
-}
-)
+})
 
 .config(function($routeProvider){
 	$routeProvider.when('/add', {
@@ -53,10 +52,13 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 			return $http(req);
 		},
 		"retrieve": function(tpe, page){
-            return $http.get("/bpr/" + tpe + '?page=' + page);
+			return $http.get("/bpr/" + tpe + '?page=' + page);
 		},
 		"update": function(data){
 			return $http.put("/bpr", data);
+		},
+		"updateNote": function(data){
+			return $http.put("/bprnote", data);
 		},
 		"delete": function(data){
 			var id = data._id;
@@ -68,21 +70,21 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 .factory("chart", function($http, settings){
 	return{
 		"fetchData": function(){
-            return $http.get("/bpr/chart");
+			return $http.get("/bpr/chart");
 		},
 		"build": function(columnData){
 			var limits = settings.limits;
 			return c3.generate({
 				data: {
-		        	x: 'x',
+					x: 'x',
 					columns: columnData,
 					types: {
 						SYS: 'spline',
 						DIA: 'spline' ,
 						Pulse: 'spline' 
 					},
-  					hide: ['Pulse'],
-  					xFormat: '%Y-%m-%dT%H:%M:%S.%LZ'
+					hide: ['Pulse'],
+					xFormat: '%Y-%m-%dT%H:%M:%S.%LZ'
 				},
 				axis: {
 					y: {
@@ -141,20 +143,20 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
     };
 
     var modalOptions = {
-        closeButtonText: 'Close',
+        closeButtonText: 'Cancel',
         actionButtonText: 'OK',
         headerText: 'Delete?',
         bodyText: 'Are you sure you want to delete this record?'
     };
 
-    this.showModal = function (customModalDefaults, customModalOptions) {
+    this.showModal = function (customModalDefaults, customModalOptions, data) {
+		var tempModalDefaults = {},
+			tempModalOptions = {};
+
 		if (!customModalDefaults) {
 			customModalDefaults = {};
 		}
 		customModalDefaults.backdrop = 'static';
-
-		var tempModalDefaults = {};
-		var tempModalOptions = {};
 
 		angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
 		angular.extend(tempModalOptions, modalOptions, customModalOptions);
@@ -162,8 +164,9 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 		if (!tempModalDefaults.controller) {
 			tempModalDefaults.controller = function ($scope, $uibModalInstance) {
 				$scope.modalOptions = tempModalOptions;
+				$scope.note = data;
 				$scope.modalOptions.ok = function (result) {
-					$uibModalInstance.close(result);
+					$uibModalInstance.close($scope.note);
 				};
 				$scope.modalOptions.close = function (result) {
 					$uibModalInstance.dismiss('cancel');
@@ -207,13 +210,13 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 	return{
 		restrict: 'E',
 		templateUrl: DEFAULTS.dir + 'bprecords.htm',
-		controller: function($scope, $window, $attrs, $filter, modal, bprecords, settings, utils){
-        	var currentEdit = null,
-        		cancelRow;
+		controller: function($scope, $window, $attrs, modal, bprecords, settings, utils){
+			var currentEdit = null,
+				cancelRow;
 
-        	$scope.editRowNo = -1;
-        	$scope.limits = settings.limits;
-        	$scope.tpe = $attrs.tpe;
+			$scope.editRowNo = -1;
+			$scope.limits = settings.limits;
+			$scope.tpe = $attrs.tpe;
 
 			cancelRow = function(rowNo){
 				if (currentEdit && currentEdit.no !== rowNo){
@@ -235,20 +238,12 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 					time: utils.getTime(dt)
 				};
 
-
 				$scope.editRowNo = rowNo;
 			};
 			$scope.deleteRow = function(rowNo){
 				cancelRow(rowNo);
 
-				var modalOptions = {
-					closeButtonText: 'Cancel',
-					actionButtonText: 'Delete record',
-					headerText: 'Delete?',
-					bodyText: 'Are you sure you want to delete this record?'
-				};
-
-				modal.showModal({}, modalOptions).then(function (result) {
+				modal.showModal({}, {}, null).then(function (result) {
 					bprecords.delete($scope.records[rowNo]);
 					$scope.records.splice(rowNo, 1);
 					$scope.editRowNo = -1;
@@ -295,6 +290,23 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 					currentEdit = null;
 				}
 			};
+			$scope.editNote = function(rowNo){
+				var modalDefaults = {templateUrl: '/partials/modals/note.htm'},
+					modalOptions = {headerText: 'Note'},
+					data = {
+						"note": $scope.records[rowNo].note, 
+						"noteOnChart": $scope.records[rowNo].noteOnChart};
+
+				modal.showModal(modalDefaults, modalOptions, angular.copy(data)).then(function (newData) {
+					if (!angular.equals(data, newData)){
+						newData._id = $scope.records[rowNo]._id;
+						bprecords.updateNote(newData).then(function(response){
+							$scope.records[rowNo].note = newData.note;
+							$scope.records[rowNo].noteOnChart = newData.noteOnChart;
+						});
+					}
+				});
+			};
 			$scope.onKeyPressed = function(event){
 				if (event.which === 13){ //Enter
 					$scope.submitEdit($scope.editRowNo);
@@ -318,9 +330,9 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 			var loadRows;
 
 			$scope.pager = {};
-        	$scope.pager.currentPage = 1;
+			$scope.pager.currentPage = 1;
 
-        	loadRows = function(page){
+			loadRows = function(page){
 				bprecords.retrieve('all', page).then(function(response){
 					$scope.records = response.data.records;
 					$scope.pager.totalNoOfRecords = response.data.total;
@@ -423,16 +435,6 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 			$scope.status = {
 				opened: false
 			};
-		}
-	};
-})
-
-.directive("timePicker", function(DEFAULTS){
-	return{
-		restrict:'E',
-		templateUrl: DEFAULTS.dir + 'timepicker.htm',
-		controller: function ($scope) {
-			
 		}
 	};
 });

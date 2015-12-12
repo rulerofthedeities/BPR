@@ -32,6 +32,8 @@ var loadBPR = function(db, options, callback){
 				'dia':true, 
 				'sys':true, 
 				'pulse':true,
+				'note':true,
+				'noteOnChart':true,
 				'dt': true,
 				'dtSubmit': true})
 			.skip(options.page * max)
@@ -61,10 +63,29 @@ var updateBPR = function(db, data, callback){
 		}, 
 		function(err, r){
 			assert.equal(null, err);
+			callback(r);
 		}
 	);
 
-	callback();
+};
+
+var updateNote = function(db, data, callback){
+	var mongoId = new mongo.ObjectID(data._id);
+
+	console.log("updating note");
+	db.collection('bp').updateOne(
+		{_id: mongoId}, 
+		{$set: {
+			note: data.note, 
+			noteOnChart:data.onChart,
+			dtNote: new Date()}
+		}, 
+		function(err, r){
+			assert.equal(null, err);
+			callback(r);
+		}
+	);
+
 };
 
 var deleteBPR = function(db, id, callback){
@@ -98,8 +119,13 @@ module.exports = {
 		});
 	},
 	update: function(req, res){
-		updateBPR(mongo.DB, req.body, function(){
-			res.status(200);
+		updateBPR(mongo.DB, req.body, function(r){
+			res.status(200).send(r);
+		});
+	},
+	updateNote: function(req, res){
+		updateNote(mongo.DB, req.body, function(r){
+			res.status(200).send(r);
 		});
 	},
 	delete: function(req, res){

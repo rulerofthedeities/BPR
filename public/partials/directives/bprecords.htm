@@ -52,8 +52,10 @@
 							required>
 					</span>
 				</td>
+
 				<td class="text-center">
 					<span ng-show="editRowNo!=$index">
+						<i class="fa fa-file-text-o" ng-class="{'nonote':!record.note}" ng-click="editNote($index)"></i>&nbsp;
 						<i class="fa fa-pencil" ng-click="editRow($index)"></i>&nbsp;
 						<i class="fa fa-trash" ng-click="deleteRow($index)"></i>
 					</span>
