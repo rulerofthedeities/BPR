@@ -2,7 +2,7 @@
 
 	<form class="form-horizontal">
   		<div class="form-group">
-			<div class="col-sm-6">
+			<div class="col-sm-5">
 				<div class="well">
 					<label class="checkbox-inline">
 						<input 
@@ -27,7 +27,7 @@
 					</label>
 				</div>
 			</div>
-			<div class="col-sm-6">
+			<div class="col-sm-5">
 				<div class="well">
 					<label class="radiobox-inline">
 						<input 
@@ -52,6 +52,17 @@
 							value="pm" 
 							ng-model="select" 
 							ng-change="updateSelection()">PM
+					</label>
+				</div>
+			</div>
+			<div class="col-sm-2">
+				<div class="well">
+					<label class="checkbox-inline">
+						<input 
+							type="checkbox" 
+							name="notes"
+							ng-model="notes" 
+							ng-change="updateNotes()">Show notes
 					</label>
 				</div>
 			</div>

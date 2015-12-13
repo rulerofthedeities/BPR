@@ -14,7 +14,7 @@ var loadBPR = function(db, options, callback){
 	var collection = db.collection('bp'),
 		max = options.tpe === "add" ? Math.min(10, options.max) : options.max;
 
-	if (options.tpe == "chart"){
+	var loadChart = function(){
 		collection
 			.find({},{
 				'_id':false, 
@@ -22,13 +22,29 @@ var loadBPR = function(db, options, callback){
 				'sys':true, 
 				'pulse':true,
 				'dt': true})
-			.sort({'dt':-1})
+			.sort({'dt':1})
 			.toArray(function(err, docs) {
 				assert.equal(null, err);
 				callback(docs, 0);
 			});
-	} else {
-		collection.find({},{
+	};
+
+	var loadNotes = function(){
+		collection
+			.find({note:{$exists: true, $ne: ""}},{
+				'_id':false, 
+				'note':true, 
+				'dtNote': true})
+			.sort({'dtNote':1})
+			.toArray(function(err, docs) {
+				assert.equal(null, err);
+				callback(docs, 0);
+			});
+	};
+
+	var loadAll = function(){
+		collection
+			.find({},{
 				'dia':true, 
 				'sys':true, 
 				'pulse':true,
@@ -46,6 +62,12 @@ var loadBPR = function(db, options, callback){
 					callback(docs, count);
 				});
 			});
+	};
+
+	switch(options.tpe){
+		case "chart": loadChart();break;
+		case "notes": loadNotes();break;
+		default: loadAll();
 	}
 };
 

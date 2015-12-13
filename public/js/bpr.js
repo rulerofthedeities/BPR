@@ -75,9 +75,13 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 		"fetchData": function(){
 			return $http.get("/bpr/chart");
 		},
-		"build": function(columnData){
-			var limits = settings.limits;
-			return c3.generate({
+		"fetchNotes": function(){
+			return $http.get("/bpr/notes");
+		},
+		"build": function(columnData, customOptions){
+			var limits = settings.limits,
+				options,
+				defaultOptions = {
 				data: {
 					x: 'x',
 					columns: columnData,
@@ -113,9 +117,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 				grid: {
 					x: {
 						show: false,
-						lines: [
-							{value: "2014-06-06T18:17:04.777Z", text: 'Test'},
-						]
+						lines: []
 					},
 					y: {
 		            	show: true,
@@ -131,7 +133,9 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 						height: 20
 					}
 				}
-			});
+			};
+			options = angular.merge(defaultOptions, customOptions);
+			return c3.generate(options);
 		}
 	};
 })
@@ -357,19 +361,22 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 	srcChartData = [],
 	thisChart;
 
-	chart.fetchData().then(function(response){
-		var dbData = response.data.records,
-			dataSet = ['SYS', 'DIA', 'Pulse', 'x'];
+	var loadChart = function(options){
+		chart.fetchData().then(function(response){
+			var dbData = response.data.records,
+				dataSet = ['SYS', 'DIA', 'Pulse', 'x'];
 
-		//transpose data (swap columns and rows)
-		dbData = utils.transpose(dbData);
-		for (var indx = 0; indx <= 3; indx++){
-			chartData.push(dbData[indx]);
-			chartData[indx].unshift(dataSet[indx]);
-		}
-		srcChartData = angular.copy(dbData); //for filtering
-		thisChart = chart.build(chartData);
-	});
+			//transpose data (swap columns and rows)
+			dbData = utils.transpose(dbData);
+			for (var indx = 0; indx <= 3; indx++){
+				chartData.push(dbData[indx]);
+				chartData[indx].unshift(dataSet[indx]);
+			}
+			srcChartData = angular.copy(dbData); //for filtering
+			thisChart = chart.build(chartData, {});
+		});
+	};
+
 
 	$scope.lines = lines;
 
@@ -402,6 +409,26 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 		}
 		thisChart.load({columns:chartData});
 	};
+
+	$scope.notes = false;
+
+	$scope.updateNotes = function(){
+		if ($scope.notes){
+			//adding notes to chart
+			chart.fetchNotes().then(function(response){
+				var notes = [];
+				angular.forEach(response.data.records, function(value, key) {
+					notes.push({value:value.dtNote, text:value.note});
+				});
+				thisChart = chart.build(chartData, {grid:{x:{lines: notes}}});
+			});
+		} else {
+			//removing notes from chart
+			thisChart = chart.build(chartData, {});
+		}
+	};
+
+	loadChart({});
 		
 })
 

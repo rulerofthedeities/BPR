@@ -34,9 +34,8 @@ table .fa {
 .fa-times {
   color: red; }
 
-.fa-file-text-o.nonote{
-  color: #ccc;
-}
+.fa.nonote {
+  color: #ddd; }
 
 table#records {
   margin-bottom: 3px; }
@@ -69,6 +68,10 @@ input.center {
 .c3-ygrid-line.maxsys line {
   stroke: blue;
   stroke-width: 3px; }
+
+.well {
+  padding: 16px;
+  margin-bottom: 8px; }
 
 /* Validation */
 .ng-valid.ng-dirty {

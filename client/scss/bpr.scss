@@ -32,6 +32,7 @@ table .fa {
 }
 .fa-check{color:green;}
 .fa-times{color:red;}
+.fa.nonote{color:#ddd;}
 table#records{
 	margin-bottom: 3px;
 }
@@ -65,6 +66,10 @@ input.center{
 .c3-ygrid-line.maxsys line {
 	stroke: blue;
 	stroke-width:3px;
+}
+.well {
+	padding:16px;
+	margin-bottom: 8px;
 }
 
 /* Validation */
