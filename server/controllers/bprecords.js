@@ -43,8 +43,15 @@ var loadBPR = function(db, options, callback){
 	};
 
 	var loadAll = function(){
+		var y = parseInt(options.month.year, 10),
+			m = parseInt(options.month.month, 10),
+			dtStart = new Date(y, m, 1),
+			dtEnd = new Date(y, m, 1);
+		dtEnd.setMonth(dtEnd.getMonth() + 1);
+
 		collection
-			.find({},{
+			.find({dt:{"$gte": dtStart, "$lt":dtEnd}},
+			{
 				'dia':true, 
 				'sys':true, 
 				'pulse':true,
@@ -52,8 +59,6 @@ var loadBPR = function(db, options, callback){
 				'noteOnChart':true,
 				'dt': true,
 				'dtSubmit': true})
-			.skip(options.page * max)
-			.limit(max)
 			.sort({'dt':-1})
 			.toArray(function(err, docs) {
 				assert.equal(null, err);
@@ -119,6 +124,13 @@ var deleteBPR = function(db, id, callback){
 	callback();
 };
 
+var getFirstYear = function(db, callback){
+	db.collection('bp').find({}).limit(1).sort({dt:1}).toArray(function(err, docs) {
+		assert.equal(null, err);
+		callback(docs[0].dt);
+	});
+};
+
 module.exports = {
 	save: function(req, res){
 		var newRecord = req.body;
@@ -132,12 +144,16 @@ module.exports = {
 	load: function(req, res){
 		var tpe = req.params.tpe,
 			max = req.app.settings.maxRecordsPerPage,
-			page = req.query.page;
-
-		page = page < 1 ? 0 : --page;
-		loadBPR(mongo.DB, {'tpe':tpe, 'max':max, 'page': page}, function(records, total){
-			res.status(200).send({"records" : records, "total": total});
-		});
+			month = {year:req.query.y, month:req.query.m};
+		if (tpe==="firstyear"){
+			getFirstYear(mongo.DB, function(dt){
+				res.status(200).send(dt);
+			});
+		} else {
+			loadBPR(mongo.DB, {'tpe':tpe, 'max':max, 'month': month}, function(records, total){
+				res.status(200).send({"records" : records, "total": total});
+			});
+		}
 	},
 	update: function(req, res){
 		updateBPR(mongo.DB, req.body, function(r){

@@ -54,8 +54,8 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 				};
 			return $http(req);
 		},
-		"retrieve": function(tpe, page){
-			return $http.get("/bpr/" + tpe + '?page=' + page);
+		"retrieve": function(tpe, month){
+			return $http.get("/bpr/" + tpe + '?y=' + month.year + '&m=' + month.month);
 		},
 		"update": function(data){
 			return $http.put("/bpr", data);
@@ -66,6 +66,9 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 		"delete": function(data){
 			var id = data._id;
 			return $http.delete("/bpr?id=" + id);
+		},
+		"getOldestDay": function(){
+			return $http.get("/bpr/firstyear");
 		}
 	};
 })
@@ -105,7 +108,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 					x: {
 						type: 'timeseries',
 						tick: {
-							format: '%Y-%m-%d',
+							format: '%Y-%m-%d %H:%M',
 							//format: function (x) { return x.getFullYear(); },
 							fit: true,
 							culling: {
@@ -138,6 +141,20 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 			return c3.generate(options);
 		}
 	};
+})
+
+.service("pager", function(){
+	var dt = new Date();
+	this.curYear = dt.getFullYear();
+	this.curMonth = dt.getMonth();
+	
+	this.getCurrentMonth = function(){
+		return {
+			year:this.curYear, 
+			month:this.curMonth};
+	};
+
+
 })
 
 .service('modal', function ($uibModal) {
@@ -217,19 +234,26 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 	return{
 		restrict: 'E',
 		templateUrl: DEFAULTS.dir + 'bprecords.htm',
-		controller: function($scope, $window, $attrs, modal, bprecords, settings, utils){
+		controller: function($scope, $window, $attrs, modal, bprecords, settings, pager, utils){
 			var currentEdit = null,
-				cancelRow;
+				cancelRow,
+				loadRows;
 
 			$scope.editRowNo = -1;
 			$scope.limits = settings.limits;
-			$scope.tpe = $attrs.tpe;
+			$scope.pageTpe = $attrs.tpe;
 
 			cancelRow = function(rowNo){
 				if (currentEdit && currentEdit.no !== rowNo){
 					//Previous edit not submitted, cancel
 					$scope.cancelEdit(currentEdit.no);
 				}
+			};
+			loadRows = function(month){
+				bprecords.retrieve('all', month).then(function(response){
+					$scope.records = response.data.records;
+					$scope.totalNoOfRecords = response.data.total;
+				});
 			};
 
 			$scope.editRow = function(rowNo){
@@ -325,6 +349,11 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 					$scope.$apply();
 				}
 			};
+			$scope.$on("month:updated", function(event, month){
+				loadRows(month);
+			});
+
+			loadRows(pager.getCurrentMonth());
 		}
     };
 })
@@ -332,24 +361,32 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 .directive("bpPager", function(DEFAULTS){
 	return{
 		restrict: 'E',
-		templateUrl: DEFAULTS.dir + 'pager.htm',
-		controller: function($scope, bprecords){
-			var loadRows;
+		templateUrl: DEFAULTS.dir + 'bppager.htm',
+		controller: function($scope, bprecords, pager){
+			$scope.pager = pager.getCurrentMonth();
+			$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+			
+			
+			bprecords.getOldestDay().then(function(response){
+				var dt = new Date(response.data),
+					firstYear = dt.getFullYear(),
+					curYear = new Date().getFullYear(),
+					years = [];
 
-			$scope.pager = {};
-			$scope.pager.currentPage = 1;
+				for (var y = firstYear; y <= curYear; y++){
+					years.push(y);
+				}
+				$scope.years = years;
+			});
 
-			loadRows = function(page){
-				bprecords.retrieve('all', page).then(function(response){
-					$scope.records = response.data.records;
-					$scope.pager.totalNoOfRecords = response.data.total;
-				});
+			$scope.changeYear = function(year){
+				$scope.pager.year = year;
+				$scope.$emit("month:updated", $scope.pager);
 			};
 
-			loadRows($scope.pager.currentPage);
-			
-			$scope.pager.pageChanged = function() {
-				loadRows($scope.pager.currentPage);
+			$scope.changeMonth = function(month){
+				$scope.pager.month = month;
+				$scope.$emit("month:updated", $scope.pager);
 			};
 		}
 	};
