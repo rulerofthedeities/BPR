@@ -1,9 +1,10 @@
 var gulp = require('gulp'),
 	concat = require('gulp-concat'),
 	sass = require('gulp-sass'),
+	babel = require('gulp-babel'),
 
 	config = {
-    	bowerDir: 'bower_components/'
+		bowerDir: 'bower_components/'
 	},
 
 	vendorJS 	= [
@@ -35,6 +36,9 @@ gulp.task('vendor_scripts', function() {
 gulp.task('client_scripts', function() {
 	return gulp.src(clientJS)
 		.pipe(concat('bpr.js'))
+		.pipe(babel({
+			presets: ['es2015']
+		}))
 		.pipe(gulp.dest('public/js'));
 });
 
@@ -45,10 +49,10 @@ gulp.task('vendor_styles', function() {
 });
 
 gulp.task('client_scss', function() {
-    return gulp.src('client/scss/**.scss')
-        .pipe(sass().on('error', sass.logError))
+	return gulp.src('client/scss/**.scss')
+		.pipe(sass().on('error', sass.logError))
 		.pipe(concat('bpr.css'))
-        .pipe(gulp.dest('public/css/'));
+		.pipe(gulp.dest('public/css/'));
 });
 
 gulp.task('vendor_fonts', function() {
@@ -57,9 +61,9 @@ gulp.task('vendor_fonts', function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch('client/scss/**.scss', ['client_scss']);
-  gulp.watch('client.js', ['client_scripts']);
-  gulp.watch('client/js/*.js', ['client_scripts']);
+	gulp.watch('client/scss/**.scss', ['client_scss']);
+	gulp.watch('client.js', ['client_scripts']);
+	gulp.watch('client/js/**.js', ['client_scripts']);
 });
 
 gulp.task('default', [

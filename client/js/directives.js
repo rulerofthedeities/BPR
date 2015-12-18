@@ -35,7 +35,7 @@
 			restrict: 'E',
 			templateUrl: DEFAULTS.DIR + 'bprecords.htm',
 			controller: function($scope, $window, $attrs, modal, bprecords, settings, pager, utils){
-				var currentEdit = null,
+				let currentEdit = null,
 					cancelRow,
 					loadRows;
 
@@ -57,7 +57,7 @@
 				};
 
 				$scope.editRow = function(rowNo){
-					var dt = new Date($scope.records[rowNo].dt);
+					let dt = new Date($scope.records[rowNo].dt);
 					cancelRow(rowNo);
 					currentEdit = {
 						"data":angular.copy($scope.records[rowNo]), 
@@ -65,6 +65,7 @@
 					};
 
 					$scope.dateEdit = {
+						dt: dt,
 						date: utils.getDate(dt), 
 						time: utils.getTime(dt)
 					};
@@ -81,10 +82,9 @@
 					});
 				};
 				$scope.submitEdit = function(rowNo){
-					var dt = new Date($scope.dateEdit.date),
-						dtOriginal = new Date(currentEdit.data.dt),
-						originalTime = utils.getTime(dtOriginal),
-						dtupdated = false;
+					let dtOriginal = currentEdit.data.dt,
+						dtupdated = false,
+						time;
 
 					//Check if row data is valid
 					if ($scope.bpTableForm["date" + rowNo].$invalid || 
@@ -97,11 +97,12 @@
 					}
 
 					//Check if date or time was modified
-					if (currentEdit.data.dt !== dt.toISOString() || originalTime !== $scope.dateEdit.time){
-						var time = $scope.dateEdit.time.split(":");
-						dt.setHours(time[0]);
-						dt.setMinutes(time[1]);
-						$scope.records[rowNo].dt = dt.toISOString();
+					time = $scope.dateEdit.time.split(":");
+					$scope.dateEdit.dt.setHours(time[0]);
+					$scope.dateEdit.dt.setMinutes(time[1]);
+
+					if (dtOriginal !== $scope.dateEdit.dt.toISOString()) {
+						$scope.records[rowNo].dt = $scope.dateEdit.dt;
 						dtupdated = true;
 					}
 
@@ -109,7 +110,7 @@
 					$scope.editRowNo = -1;
 
 					if (dtupdated){
-						bprecords.retrieve('all', $scope.pager.currentPage).then(function(response){
+						bprecords.retrieve('all', pager.getCurrentMonth()).then(function(response){
 							$scope.records = response.data.records;
 						});
 					}
@@ -122,7 +123,7 @@
 					}
 				};
 				$scope.editNote = function(rowNo){
-					var modalDefaults = {templateUrl: '/partials/modals/note.htm'},
+					let modalDefaults = {templateUrl: '/partials/modals/note.htm'},
 						modalOptions = {headerText: 'Note'},
 						data = {
 							"note": $scope.records[rowNo].note, 
@@ -131,7 +132,7 @@
 					modal.showModal(modalDefaults, modalOptions, angular.copy(data)).then(function (newData) {
 						if (!angular.equals(data, newData)){
 							newData._id = $scope.records[rowNo]._id;
-							bprecords.updateNote(newData).then(function(response){
+							bprecords.update(newData, "note").then(function(response){
 								$scope.records[rowNo].note = newData.note;
 								$scope.records[rowNo].noteOnChart = newData.noteOnChart;
 							});
@@ -163,20 +164,20 @@
 			restrict: 'E',
 			templateUrl: DEFAULTS.DIR + 'bppager.htm',
 			controller: function($scope, bprecords, pager){
-				var firstYear,
+				let firstYear,
 					curYear;
 				$scope.pager = pager.getCurrentMonth();
 				$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 				
 				
 				bprecords.getOldestDay().then(function(response){
-					var dt = new Date(response.data),
+					let dt = new Date(response.data),
 						years = [];
 
 					firstYear = dt.getFullYear();
 					curYear = new Date().getFullYear();
 
-					for (var y = firstYear; y <= curYear; y++){
+					for (let y = firstYear; y <= curYear; y++){
 						years.push(y);
 					}
 					$scope.years = years;
@@ -193,14 +194,14 @@
 				};
 
 				$scope.nextMonth = function(dir){
-					var  m = $scope.pager.month + dir;
+					let  m = $scope.pager.month + dir;
 					m = m < 0 ? DEFAULTS.MONTHS - 1 : m;
 					$scope.pager.month = m % DEFAULTS.MONTHS;
 					$scope.$emit("month:updated", $scope.pager);
 				};
 
 				$scope.nextYear = function(dir){
-					var  y = $scope.pager.year + dir;
+					let  y = $scope.pager.year + dir;
 					y = y < firstYear ? curYear : y;
 					$scope.pager.year = y > curYear ? firstYear : y;
 					$scope.$emit("month:updated", $scope.pager);

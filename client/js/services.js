@@ -26,7 +26,7 @@
 
 		return {
 			"save": function(data){
-				var req = {
+				let req = {
 					 method: 'POST',
 					 url: '/bpr',
 					 headers: {
@@ -39,14 +39,11 @@
 			"retrieve": function(tpe, month){
 				return $http.get("/bpr/" + tpe + '?y=' + month.year + '&m=' + month.month);
 			},
-			"update": function(data){
-				return $http.put("/bpr", data);
-			},
-			"updateNote": function(data){
-				return $http.put("/bprnote", data);
+			"update": function(data, tpe = ""){
+				return $http.put("/bpr" + tpe, data);
 			},
 			"delete": function(data){
-				var id = data._id;
+				let id = data._id;
 				return $http.delete("/bpr?id=" + id);
 			},
 			"getOldestDay": function(){
@@ -64,7 +61,7 @@
 				return $http.get("/bpr/notes");
 			},
 			"build": function(columnData, customOptions){
-				var limits = settings.limits,
+				let limits = settings.limits,
 					options,
 					defaultOptions = {
 					data: {
@@ -126,7 +123,7 @@
 	})
 
 	.service("pager", function(){
-		var dt = new Date();
+		let dt = new Date();
 		this.curYear = dt.getFullYear();
 		this.curMonth = dt.getMonth();
 		
@@ -141,14 +138,14 @@
 
 	.service('modal', function ($uibModal) {
 
-	    var modalDefaults = {
+	    let modalDefaults = {
 	        backdrop: true,
 	        keyboard: true,
 	        modalFade: true,
 	        templateUrl: '/partials/modals/confirm.htm'
 	    };
 
-	    var modalOptions = {
+	    let modalOptions = {
 	        closeButtonText: 'Cancel',
 	        actionButtonText: 'OK',
 	        headerText: 'Delete?',
@@ -156,7 +153,7 @@
 	    };
 
 	    this.showModal = function (customModalDefaults, customModalOptions, data) {
-			var tempModalDefaults = {},
+			let tempModalDefaults = {},
 				tempModalOptions = {};
 
 			if (!customModalDefaults) {

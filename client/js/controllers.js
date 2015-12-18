@@ -3,19 +3,19 @@
 	"use strict";
 
 	app.controller("chartController", function($scope, chart, utils){
-		var lines = {'SYS':true, 'DIA': true, 'Pulse':false},
+		let lines = {'SYS':true, 'DIA': true, 'Pulse':false},
 		chartData = [],
 		srcChartData = [],
 		thisChart;
 
-		var loadChart = function(options){
+		let loadChart = function(options){
 			chart.fetchData().then(function(response){
-				var dbData = response.data.records,
+				let dbData = response.data.records,
 					dataSet = ['SYS', 'DIA', 'Pulse', 'x'];
 
 				//transpose data (swap columns and rows)
 				dbData = utils.transpose(dbData);
-				for (var indx = 0; indx <= 3; indx++){
+				for (let indx = 0; indx <= 3; indx++){
 					chartData.push(dbData[indx]);
 					chartData[indx].unshift(dataSet[indx]);
 				}
@@ -41,12 +41,12 @@
 
 		$scope.updateSelection = function(){
 			if ($scope.select !== "all"){
-				var dt;
+				let dt;
 				chartData = [["SYS"],["DIA"],["Pulse"],["x"]];
-				for (indx = 1; indx < srcChartData[0].length; indx++){
+				for (let indx = 1; indx < srcChartData[0].length; indx++){
 					dt = new Date(srcChartData[3][indx]);
 					if (($scope.select === "am" && dt.getHours() < 12) || ($scope.select === "pm" && dt.getHours() >= 12)){
-						for (var indy = 0; indy <= 3; indy++){
+						for (let indy = 0; indy <= 3; indy++){
 							chartData[indy].push(srcChartData[indy][indx]);
 						}
 					}
@@ -63,7 +63,7 @@
 			if ($scope.notes){
 				//adding notes to chart
 				chart.fetchNotes().then(function(response){
-					var notes = [];
+					let notes = [];
 					angular.forEach(response.data.records, function(value, key) {
 						notes.push({value:value.dtNote, text:value.note});
 					});
