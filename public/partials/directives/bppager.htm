@@ -1,15 +1,15 @@
 <ul class="pagination">
-	<li class="disabled"><a href="#">&laquo;</a></li>
+	<li><a href="#" ng-click="$event.preventDefault();nextYear(-1);">&laquo;</a></li>
 	<li ng-repeat="year in years" ng-class="{'active':pager.year == year}">
 		<a href="#" ng-click="$event.preventDefault();changeYear(year);">{{year}}</a>
 	</li>
-	<li><a href="#">&raquo;</a></li>
+	<li><a href="#" ng-click="$event.preventDefault();nextYear(1);">&raquo;</a></li>
 </ul>
 <br>
 <ul class="pagination">
-	<li class="disabled"><a href="#">&laquo;</a></li>
+	<li><a href="#" ng-click="$event.preventDefault();nextMonth(-1);">&laquo;</a></li>
 	<li ng-repeat="month in months" ng-class="{'active':pager.month == $index}">
 		<a href="#" ng-click="$event.preventDefault();changeMonth($index);">{{month}}</a>
 	</li>
-	<li><a href="#">&raquo;</a></li>
+	<li><a href="#" ng-click="$event.preventDefault();nextMonth(1);">&raquo;</a></li>
 </ul>

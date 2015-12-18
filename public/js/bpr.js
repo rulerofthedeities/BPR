@@ -1,6 +1,8 @@
 angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 
-.constant("DEFAULTS", {"dir": "partials/directives/"})
+.constant("DEFAULTS", {
+	"DIR": "partials/directives/",
+	"MONTHS": 12})
 
 .value("settings", {
 	"limits": {
@@ -205,14 +207,14 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 .directive("bpNav", function(DEFAULTS){
 	return{
 		restrict: 'E',
-		templateUrl: DEFAULTS.dir + 'bpnav.htm'
+		templateUrl: DEFAULTS.DIR + 'bpnav.htm'
 	};
 })
 
 .directive('addBp', function(DEFAULTS, settings){
 	return{
 		restrict: 'E',
-		templateUrl: DEFAULTS.dir + 'addbp.htm',
+		templateUrl: DEFAULTS.DIR + 'addbp.htm',
 		controllerAs: 'ctrl',
 		controller: function($scope, bprecords){
 			this.bpr = {};
@@ -233,7 +235,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 .directive('bpRecords', function(DEFAULTS){
 	return{
 		restrict: 'E',
-		templateUrl: DEFAULTS.dir + 'bprecords.htm',
+		templateUrl: DEFAULTS.DIR + 'bprecords.htm',
 		controller: function($scope, $window, $attrs, modal, bprecords, settings, pager, utils){
 			var currentEdit = null,
 				cancelRow,
@@ -361,17 +363,20 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 .directive("bpPager", function(DEFAULTS){
 	return{
 		restrict: 'E',
-		templateUrl: DEFAULTS.dir + 'bppager.htm',
+		templateUrl: DEFAULTS.DIR + 'bppager.htm',
 		controller: function($scope, bprecords, pager){
+			var firstYear,
+				curYear;
 			$scope.pager = pager.getCurrentMonth();
 			$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 			
 			
 			bprecords.getOldestDay().then(function(response){
 				var dt = new Date(response.data),
-					firstYear = dt.getFullYear(),
-					curYear = new Date().getFullYear(),
 					years = [];
+
+				firstYear = dt.getFullYear();
+				curYear = new Date().getFullYear();
 
 				for (var y = firstYear; y <= curYear; y++){
 					years.push(y);
@@ -379,13 +384,27 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 				$scope.years = years;
 			});
 
+			$scope.changeMonth = function(month){
+				$scope.pager.month = month;
+				$scope.$emit("month:updated", $scope.pager);
+			};
+
 			$scope.changeYear = function(year){
 				$scope.pager.year = year;
 				$scope.$emit("month:updated", $scope.pager);
 			};
 
-			$scope.changeMonth = function(month){
-				$scope.pager.month = month;
+			$scope.nextMonth = function(dir){
+				var  m = $scope.pager.month + dir;
+				m = m < 0 ? DEFAULTS.MONTHS - 1 : m;
+				$scope.pager.month = m % DEFAULTS.MONTHS;
+				$scope.$emit("month:updated", $scope.pager);
+			};
+
+			$scope.nextYear = function(dir){
+				var  y = $scope.pager.year + dir;
+				y = y < firstYear ? curYear : y;
+				$scope.pager.year = y > curYear ? firstYear : y;
 				$scope.$emit("month:updated", $scope.pager);
 			};
 		}
@@ -472,7 +491,7 @@ angular.module("bpApp", ["ngRoute", "ui.bootstrap"])
 .directive("datetimePicker", function(DEFAULTS){
 	return{
 		restrict:'E',
-		templateUrl: DEFAULTS.dir + 'datetimepicker.htm',
+		templateUrl: DEFAULTS.DIR + 'datetimepicker.htm',
 		controller: 
 		function ($scope) {
 			
