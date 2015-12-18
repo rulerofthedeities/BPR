@@ -20,11 +20,21 @@ var gulp = require('gulp'),
 
 	vendorFonts = [
 		config.bowerDir + 'font-awesome/fonts/**.*',
-		config.bowerDir + 'bootstrap/fonts/**.*'];
+		config.bowerDir + 'bootstrap/fonts/**.*'],
+
+	clientJS = [
+		'client.js',
+		'client/js/**.js'];
 
 gulp.task('vendor_scripts', function() {
 	return gulp.src(vendorJS)
 		.pipe(concat('vendor.js'))
+		.pipe(gulp.dest('public/js'));
+});
+
+gulp.task('client_scripts', function() {
+	return gulp.src(clientJS)
+		.pipe(concat('bpr.js'))
 		.pipe(gulp.dest('public/js'));
 });
 
@@ -48,13 +58,13 @@ gulp.task('vendor_fonts', function() {
 
 gulp.task('watch', function() {
   gulp.watch('client/scss/**.scss', ['client_scss']);
-
-  //gulp.watch('client.js', ['client_scripts']);
-  //gulp.watch('client/js/*.js', ['client_scripts']);
+  gulp.watch('client.js', ['client_scripts']);
+  gulp.watch('client/js/*.js', ['client_scripts']);
 });
 
 gulp.task('default', [
 	'vendor_scripts', 
+	'client_scripts', 
 	'vendor_styles', 
 	'client_scss',
 	'vendor_fonts',
