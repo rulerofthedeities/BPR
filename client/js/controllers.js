@@ -4,12 +4,12 @@
 
 	app.controller("chartController", function($scope, chart, utils){
 		let lines = {'SYS':true, 'DIA': true, 'Pulse':false},
-		chartData = [],
-		srcChartData = [],
-		thisChart;
+			chartData = [],
+			srcChartData = [],
+			thisChart;
 
-		let loadChart = function(options){
-			chart.fetchData().then(function(response){
+		let loadChart = (options = {}) => {
+			chart.fetch().then(function(response){
 				let dbData = response.data.records,
 					dataSet = ['SYS', 'DIA', 'Pulse', 'x'];
 
@@ -27,7 +27,7 @@
 
 		$scope.lines = lines;
 
-		$scope.updateLines = function(){
+		$scope.updateLines = () => {
 			angular.forEach($scope.lines, function(show, line) {
 				if (show) {
 					thisChart.show([line]);
@@ -39,7 +39,7 @@
 
 		$scope.select = "all";
 
-		$scope.updateSelection = function(){
+		$scope.updateSelection = () => {
 			if ($scope.select !== "all"){
 				let dt;
 				chartData = [["SYS"],["DIA"],["Pulse"],["x"]];
@@ -59,12 +59,12 @@
 
 		$scope.notes = false;
 
-		$scope.updateNotes = function(){
+		$scope.updateNotes = () => {
 			if ($scope.notes){
 				//adding notes to chart
-				chart.fetchNotes().then(function(response){
+				chart.fetch("notes").then((response) => {
 					let notes = [];
-					angular.forEach(response.data.records, function(value, key) {
+					angular.forEach(response.data.records, (value, key) => {
 						notes.push({value:value.dtNote, text:value.note});
 					});
 					thisChart = chart.build(chartData, {grid:{x:{lines: notes}}});
@@ -75,7 +75,7 @@
 			}
 		};
 
-		loadChart({});
+		loadChart();
 			
 	});
 

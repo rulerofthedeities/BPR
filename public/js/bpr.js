@@ -7,7 +7,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 		"sys": { "min": 130, "max": 140 },
 		"dia": { "min": 80, "max": 90 }
 	},
-	"rowsPerPage": 10
+	"months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 });
 
 (function (ng, app) {
@@ -34,8 +34,10 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 		    srcChartData = [],
 		    thisChart = undefined;
 
-		var loadChart = function loadChart(options) {
-			chart.fetchData().then(function (response) {
+		var loadChart = function loadChart() {
+			var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+			chart.fetch().then(function (response) {
 				var dbData = response.data.records,
 				    dataSet = ['SYS', 'DIA', 'Pulse', 'x'];
 
@@ -87,7 +89,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 		$scope.updateNotes = function () {
 			if ($scope.notes) {
 				//adding notes to chart
-				chart.fetchNotes().then(function (response) {
+				chart.fetch("notes").then(function (response) {
 					var notes = [];
 					angular.forEach(response.data.records, function (value, key) {
 						notes.push({ value: value.dtNote, text: value.note });
@@ -100,7 +102,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 			}
 		};
 
-		loadChart({});
+		loadChart();
 	});
 })(angular, kmBpr);
 
@@ -113,22 +115,23 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 			restrict: 'E',
 			templateUrl: DEFAULTS.DIR + 'bpnav.htm'
 		};
-	}).directive('addBp', function (DEFAULTS, settings) {
+	}).directive('addBp', function (DEFAULTS) {
 		return {
 			restrict: 'E',
 			templateUrl: DEFAULTS.DIR + 'addbp.htm',
 			controllerAs: 'ctrl',
 			controller: function controller($scope, bprecords) {
+				var _this = this;
+
 				this.bpr = {};
 
 				this.submitBpr = function (bpr) {
-					bprecords.save(this.bpr).then(function (response) {
+					bprecords.save(_this.bpr).then(function (response) {
 						//update list
 						$scope.records.unshift(response.data);
-						$scope.records = $scope.records.splice(0, settings.rowsPerPage);
 						$scope.bpForm.$setPristine();
 					});
-					this.bpr = {};
+					_this.bpr = {};
 				};
 			}
 		};
@@ -206,6 +209,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 					bprecords.update($scope.records[rowNo]);
 					$scope.editRowNo = -1;
 
+					//Datetime updated, reload view
 					if (dtupdated) {
 						bprecords.retrieve('all', pager.getCurrentMonth()).then(function (response) {
 							$scope.records = response.data.records;
@@ -260,11 +264,11 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 		return {
 			restrict: 'E',
 			templateUrl: DEFAULTS.DIR + 'bppager.htm',
-			controller: function controller($scope, bprecords, pager) {
+			controller: function controller($scope, bprecords, pager, settings) {
 				var firstYear = undefined,
 				    curYear = undefined;
 				$scope.pager = pager.getCurrentMonth();
-				$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+				$scope.months = settings.months;
 
 				bprecords.getOldestDay().then(function (response) {
 					var dt = new Date(response.data),
@@ -289,15 +293,15 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 					$scope.$emit("month:updated", $scope.pager);
 				};
 
-				$scope.nextMonth = function (dir) {
-					var m = $scope.pager.month + dir;
+				$scope.nextMonth = function (direction) {
+					var m = $scope.pager.month + direction;
 					m = m < 0 ? DEFAULTS.MONTHS - 1 : m;
 					$scope.pager.month = m % DEFAULTS.MONTHS;
 					$scope.$emit("month:updated", $scope.pager);
 				};
 
-				$scope.nextYear = function (dir) {
-					var y = $scope.pager.year + dir;
+				$scope.nextYear = function (direction) {
+					var y = $scope.pager.year + direction;
 					y = y < firstYear ? curYear : y;
 					$scope.pager.year = y > curYear ? firstYear : y;
 					$scope.$emit("month:updated", $scope.pager);
@@ -358,7 +362,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 				return ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2);
 			},
 			"getDate": function getDate(dt) {
-				return ('0' + dt.getDate()).slice(-2) + '/' + ("0" + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getYear()).slice(-2);
+				return ('0' + dt.getDate()).slice(-2) + '/' + ('0' + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getYear()).slice(-2);
 			}
 		};
 	}).factory("bprecords", function ($http) {
@@ -393,11 +397,10 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 		};
 	}).factory("chart", function ($http, settings) {
 		return {
-			"fetchData": function fetchData() {
-				return $http.get("/bpr/chart");
-			},
-			"fetchNotes": function fetchNotes() {
-				return $http.get("/bpr/notes");
+			"fetch": function fetch() {
+				var tpe = arguments.length <= 0 || arguments[0] === undefined ? "chart" : arguments[0];
+
+				return $http.get("/bpr/" + tpe);
 			},
 			"build": function build(columnData, customOptions) {
 				var limits = settings.limits,
@@ -458,13 +461,11 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 		};
 	}).service("pager", function () {
 		var dt = new Date();
-		this.curYear = dt.getFullYear();
-		this.curMonth = dt.getMonth();
 
 		this.getCurrentMonth = function () {
 			return {
-				year: this.curYear,
-				month: this.curMonth };
+				year: dt.getFullYear(),
+				month: dt.getMonth() };
 		};
 	}).service('modal', function ($uibModal) {
 
@@ -473,22 +474,22 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 			keyboard: true,
 			modalFade: true,
 			templateUrl: '/partials/modals/confirm.htm'
-		};
-
-		var modalOptions = {
+		},
+		    modalOptions = {
 			closeButtonText: 'Cancel',
 			actionButtonText: 'OK',
 			headerText: 'Delete?',
 			bodyText: 'Are you sure you want to delete this record?'
 		};
 
-		this.showModal = function (customModalDefaults, customModalOptions, data) {
+		this.showModal = function () {
+			var customModalDefaults = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+			var customModalOptions = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+			var data = arguments[2];
+
 			var tempModalDefaults = {},
 			    tempModalOptions = {};
 
-			if (!customModalDefaults) {
-				customModalDefaults = {};
-			}
 			customModalDefaults.backdrop = 'static';
 
 			angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);

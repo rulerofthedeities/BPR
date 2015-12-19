@@ -2,30 +2,30 @@
 	
 	"use strict";
 
-	app.factory("utils", function(){
+	app.factory("utils", () => {
 		return {
-			"transpose": function(a){
+			"transpose": (a) => {
 				return Object.keys(a[0]).map(
-					function (c) { 
-						return a.map(function (r) { 
+					(c) => { 
+						return a.map( (r) => { 
 							return r[c]; 
 						}); 
 					}
 				);
 			},
-			"getTime": function(dt){
+			"getTime": (dt) => {
 				return ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2);
 			},
-			"getDate": function(dt){
-				return ('0' + dt.getDate()).slice(-2) + '/' + ("0" + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getYear()).slice(-2);
+			"getDate": (dt) => {
+				return ('0' + dt.getDate()).slice(-2) + '/' + ('0' + (dt.getMonth() + 1)).slice(-2) + '/' + ('0' + dt.getYear()).slice(-2);
 			}
 		};
-		})
+	})
 
 	.factory("bprecords", function($http){
 
 		return {
-			"save": function(data){
+			"save": (data) => {
 				let req = {
 					 method: 'POST',
 					 url: '/bpr',
@@ -36,31 +36,28 @@
 					};
 				return $http(req);
 			},
-			"retrieve": function(tpe, month){
+			"retrieve": (tpe, month) => {
 				return $http.get("/bpr/" + tpe + '?y=' + month.year + '&m=' + month.month);
 			},
-			"update": function(data, tpe = ""){
+			"update": (data, tpe = "") => {
 				return $http.put("/bpr" + tpe, data);
 			},
-			"delete": function(data){
+			"delete": (data) => {
 				let id = data._id;
 				return $http.delete("/bpr?id=" + id);
 			},
-			"getOldestDay": function(){
+			"getOldestDay": () => {
 				return $http.get("/bpr/firstyear");
 			}
 		};
 	})
 
-	.factory("chart", function($http, settings){
+	.factory("chart", ($http, settings) => {
 		return{
-			"fetchData": function(){
-				return $http.get("/bpr/chart");
+			"fetch": (tpe = "chart") => {
+				return $http.get("/bpr/" + tpe);
 			},
-			"fetchNotes": function(){
-				return $http.get("/bpr/notes");
-			},
-			"build": function(columnData, customOptions){
+			"build": (columnData, customOptions) => {
 				let limits = settings.limits,
 					options,
 					defaultOptions = {
@@ -81,8 +78,8 @@
 								text: 'mmHg',
 								position: 'outer-middle'
 							},
-				            max: 200,
-				            min: 20
+							max: 200,
+							min: 20
 							},
 						x: {
 							type: 'timeseries',
@@ -102,7 +99,7 @@
 							lines: []
 						},
 						y: {
-			            	show: true,
+							show: true,
 							lines: [
 								{value: limits.sys.max, text: 'Max SYS', class:'maxsys'},
 								{value: limits.dia.max, text: 'max DIA', class:'maxdia'}
@@ -124,13 +121,11 @@
 
 	.service("pager", function(){
 		let dt = new Date();
-		this.curYear = dt.getFullYear();
-		this.curMonth = dt.getMonth();
 		
-		this.getCurrentMonth = function(){
+		this.getCurrentMonth = () => {
 			return {
-				year:this.curYear, 
-				month:this.curMonth};
+				year:dt.getFullYear(), 
+				month:dt.getMonth()};
 		};
 
 
@@ -138,40 +133,36 @@
 
 	.service('modal', function ($uibModal) {
 
-	    let modalDefaults = {
-	        backdrop: true,
-	        keyboard: true,
-	        modalFade: true,
-	        templateUrl: '/partials/modals/confirm.htm'
-	    };
+		let modalDefaults = {
+				backdrop: true,
+				keyboard: true,
+				modalFade: true,
+				templateUrl: '/partials/modals/confirm.htm'
+			},
+			modalOptions = {
+				closeButtonText: 'Cancel',
+				actionButtonText: 'OK',
+				headerText: 'Delete?',
+				bodyText: 'Are you sure you want to delete this record?'
+			};
 
-	    let modalOptions = {
-	        closeButtonText: 'Cancel',
-	        actionButtonText: 'OK',
-	        headerText: 'Delete?',
-	        bodyText: 'Are you sure you want to delete this record?'
-	    };
-
-	    this.showModal = function (customModalDefaults, customModalOptions, data) {
+		this.showModal = (customModalDefaults = {}, customModalOptions = {}, data) => {
 			let tempModalDefaults = {},
 				tempModalOptions = {};
 
-			if (!customModalDefaults) {
-				customModalDefaults = {};
-			}
 			customModalDefaults.backdrop = 'static';
 
 			angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
 			angular.extend(tempModalOptions, modalOptions, customModalOptions);
 
 			if (!tempModalDefaults.controller) {
-				tempModalDefaults.controller = function ($scope, $uibModalInstance) {
+				tempModalDefaults.controller = ($scope, $uibModalInstance) => {
 					$scope.modalOptions = tempModalOptions;
 					$scope.note = data;
-					$scope.modalOptions.ok = function (result) {
+					$scope.modalOptions.ok = (result) => {
 						$uibModalInstance.close($scope.note);
 					};
-					$scope.modalOptions.close = function (result) {
+					$scope.modalOptions.close = (result) => {
 						$uibModalInstance.dismiss('cancel');
 					};
 				};

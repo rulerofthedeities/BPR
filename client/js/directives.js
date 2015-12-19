@@ -9,7 +9,7 @@
 		};
 	})
 
-	.directive('addBp', function(DEFAULTS, settings){
+	.directive('addBp', function(DEFAULTS){
 		return{
 			restrict: 'E',
 			templateUrl: DEFAULTS.DIR + 'addbp.htm',
@@ -17,11 +17,10 @@
 			controller: function($scope, bprecords){
 				this.bpr = {};
 
-				this.submitBpr = function(bpr){
-					bprecords.save(this.bpr).then(function(response) {
+				this.submitBpr = (bpr) => {
+					bprecords.save(this.bpr).then((response) => {
 						//update list
 						$scope.records.unshift(response.data);
-						$scope.records = $scope.records.splice(0, settings.rowsPerPage); 
 						$scope.bpForm.$setPristine();
 					});
 					this.bpr = {};
@@ -43,20 +42,20 @@
 				$scope.limits = settings.limits;
 				$scope.pageTpe = $attrs.tpe;
 
-				cancelRow = function(rowNo){
+				cancelRow = (rowNo) => {
 					if (currentEdit && currentEdit.no !== rowNo){
 						//Previous edit not submitted, cancel
 						$scope.cancelEdit(currentEdit.no);
 					}
 				};
-				loadRows = function(month){
-					bprecords.retrieve('all', month).then(function(response){
+				loadRows = (month) => {
+					bprecords.retrieve('all', month).then((response) => {
 						$scope.records = response.data.records;
 						$scope.totalNoOfRecords = response.data.total;
 					});
 				};
 
-				$scope.editRow = function(rowNo){
+				$scope.editRow = (rowNo) => {
 					let dt = new Date($scope.records[rowNo].dt);
 					cancelRow(rowNo);
 					currentEdit = {
@@ -65,23 +64,23 @@
 					};
 
 					$scope.dateEdit = {
-						dt: dt,
+						dt,
 						date: utils.getDate(dt), 
 						time: utils.getTime(dt)
 					};
 
 					$scope.editRowNo = rowNo;
 				};
-				$scope.deleteRow = function(rowNo){
+				$scope.deleteRow = (rowNo) => {
 					cancelRow(rowNo);
 
-					modal.showModal({}, {}, null).then(function (result) {
+					modal.showModal({}, {}, null).then((result) => {
 						bprecords.delete($scope.records[rowNo]);
 						$scope.records.splice(rowNo, 1);
 						$scope.editRowNo = -1;
 					});
 				};
-				$scope.submitEdit = function(rowNo){
+				$scope.submitEdit = (rowNo) => {
 					let dtOriginal = currentEdit.data.dt,
 						dtupdated = false,
 						time;
@@ -109,20 +108,21 @@
 					bprecords.update($scope.records[rowNo]);
 					$scope.editRowNo = -1;
 
+					//Datetime updated, reload view
 					if (dtupdated){
-						bprecords.retrieve('all', pager.getCurrentMonth()).then(function(response){
+						bprecords.retrieve('all', pager.getCurrentMonth()).then((response) => {
 							$scope.records = response.data.records;
 						});
 					}
 				};
-				$scope.cancelEdit = function(rowNo){
+				$scope.cancelEdit = (rowNo) => {
 					if (currentEdit){
 						$scope.records[rowNo] = currentEdit.data;
 						$scope.editRowNo = -1;
 						currentEdit = null;
 					}
 				};
-				$scope.editNote = function(rowNo){
+				$scope.editNote = (rowNo) => {
 					let modalDefaults = {templateUrl: '/partials/modals/note.htm'},
 						modalOptions = {headerText: 'Note'},
 						data = {
@@ -132,25 +132,25 @@
 					modal.showModal(modalDefaults, modalOptions, angular.copy(data)).then(function (newData) {
 						if (!angular.equals(data, newData)){
 							newData._id = $scope.records[rowNo]._id;
-							bprecords.update(newData, "note").then(function(response){
+							bprecords.update(newData, "note").then((response) => {
 								$scope.records[rowNo].note = newData.note;
 								$scope.records[rowNo].noteOnChart = newData.noteOnChart;
 							});
 						}
 					});
 				};
-				$scope.onKeyPressed = function(event){
+				$scope.onKeyPressed = (event) => {
 					if (event.which === 13){ //Enter
 						$scope.submitEdit($scope.editRowNo);
 					}
 				};
-				$window.onkeydown = function(event) {
+				$window.onkeydown = (event) => {
 					if (event.which === 27){ //ESC
 						$scope.cancelEdit($scope.editRowNo);
 						$scope.$apply();
 					}
 				};
-				$scope.$on("month:updated", function(event, month){
+				$scope.$on("month:updated", (event, month) => {
 					loadRows(month);
 				});
 
@@ -163,14 +163,14 @@
 		return{
 			restrict: 'E',
 			templateUrl: DEFAULTS.DIR + 'bppager.htm',
-			controller: function($scope, bprecords, pager){
+			controller: function($scope, bprecords, pager, settings){
 				let firstYear,
 					curYear;
 				$scope.pager = pager.getCurrentMonth();
-				$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+				$scope.months = settings.months;
 				
 				
-				bprecords.getOldestDay().then(function(response){
+				bprecords.getOldestDay().then((response) => {
 					let dt = new Date(response.data),
 						years = [];
 
@@ -183,25 +183,25 @@
 					$scope.years = years;
 				});
 
-				$scope.changeMonth = function(month){
+				$scope.changeMonth = (month) => {
 					$scope.pager.month = month;
 					$scope.$emit("month:updated", $scope.pager);
 				};
 
-				$scope.changeYear = function(year){
+				$scope.changeYear = (year) => {
 					$scope.pager.year = year;
 					$scope.$emit("month:updated", $scope.pager);
 				};
 
-				$scope.nextMonth = function(dir){
-					let  m = $scope.pager.month + dir;
+				$scope.nextMonth = (direction) => {
+					let  m = $scope.pager.month + direction;
 					m = m < 0 ? DEFAULTS.MONTHS - 1 : m;
 					$scope.pager.month = m % DEFAULTS.MONTHS;
 					$scope.$emit("month:updated", $scope.pager);
 				};
 
-				$scope.nextYear = function(dir){
-					let  y = $scope.pager.year + dir;
+				$scope.nextYear = (direction) => {
+					let  y = $scope.pager.year + direction;
 					y = y < firstYear ? curYear : y;
 					$scope.pager.year = y > curYear ? firstYear : y;
 					$scope.$emit("month:updated", $scope.pager);
@@ -217,18 +217,18 @@
 			controller: 
 			function ($scope) {
 				
-				$scope.today = function() {
+				$scope.today = () => {
 					$scope.dt = new Date();
 				};
 
-				$scope.clear = function () {
+				$scope.clear = () => {
 					$scope.dt = null;
 				};
 				$scope.clear();
 
 				$scope.maxDate = new Date();
 
-				$scope.open = function($event) {
+				$scope.open = ($event) => {
 					$scope.status.opened = true;
 				};
 

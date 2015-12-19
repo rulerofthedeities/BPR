@@ -11,7 +11,7 @@ var kmBpr = angular.module("kmBpr", [
 		"sys": {"min": 130, "max": 140},
 		"dia": {"min": 80, "max": 90}
 	},
-	"rowsPerPage" : 10
+	"months" : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 });
 
 
