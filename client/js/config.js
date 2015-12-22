@@ -8,6 +8,8 @@
 			templateUrl: 'partials/views/bplist.htm'
 		}).when('/charts', {
 			templateUrl: 'partials/views/bpcharts.htm'
+		}).when('/export', {
+			templateUrl: 'partials/views/bpexport.htm'
 		}).otherwise({redirectTo: '/add'});
 	});
 

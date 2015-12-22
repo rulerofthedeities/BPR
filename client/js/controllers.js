@@ -77,7 +77,20 @@
 
 		loadChart();
 			
-	});
+	})
+
+.controller("exportController", function($scope, $q, exp){
+	$scope.order = ['dt', 'sys', 'dia', 'pulse'];
+	$scope.filename = "bpr";
+
+	$scope.getBprArray = () => {
+		let deferred = $q.defer();
+		exp.fetch().then(function(response){
+			deferred.resolve(response.data.records);
+		});
+		return deferred.promise;
+	}
+});
 
 })(angular, kmBpr);
 

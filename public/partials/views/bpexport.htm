@@ -1,0 +1,13 @@
+<div ng-controller="exportController">
+	<button 
+		type="button" 
+		class="btn btn-success" 
+		ng-csv="getBprArray()" 
+		csv-header="['Date', 'SYS', 'DIA', 'Pulse']"
+		csv-column-order="order"
+		charset="utf-8"
+		filename="{{filename}}.csv">
+		Export
+	</button>
+
+</div>

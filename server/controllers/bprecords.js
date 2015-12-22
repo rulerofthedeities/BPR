@@ -14,7 +14,7 @@ var loadBPR = function(db, options, callback){
 	var collection = db.collection('bp'),
 		max = options.tpe === "add" ? Math.min(10, options.max) : options.max;
 
-	var loadChart = function(){
+	var loadAll = function(){
 		collection
 			.find({},{
 				'_id':false, 
@@ -42,7 +42,7 @@ var loadBPR = function(db, options, callback){
 			});
 	};
 
-	var loadAll = function(){
+	var loadMonth = function(){
 		var y = parseInt(options.month.year, 10),
 			m = parseInt(options.month.month, 10),
 			dtStart = new Date(y, m, 1),
@@ -70,9 +70,10 @@ var loadBPR = function(db, options, callback){
 	};
 
 	switch(options.tpe){
-		case "chart": loadChart();break;
+		case "export": 
+		case "chart": loadAll();break;
 		case "notes": loadNotes();break;
-		default: loadAll();
+		default: loadMonth();
 	}
 };
 

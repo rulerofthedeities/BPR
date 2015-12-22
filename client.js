@@ -1,6 +1,8 @@
 var kmBpr = angular.module("kmBpr", [
 	'ngRoute', 
-	'ui.bootstrap'])
+	'ui.bootstrap',
+	'ngSanitize', 
+	'ngCsv'])
 
 .constant("DEFAULTS", {
 	"DIR": "partials/directives/",

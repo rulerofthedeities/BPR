@@ -1,6 +1,6 @@
 'use strict';
 
-var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAULTS", {
+var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ngCsv']).constant("DEFAULTS", {
 	"DIR": "partials/directives/",
 	"MONTHS": 12 }).value("settings", {
 	"limits": {
@@ -20,6 +20,8 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 			templateUrl: 'partials/views/bplist.htm'
 		}).when('/charts', {
 			templateUrl: 'partials/views/bpcharts.htm'
+		}).when('/export', {
+			templateUrl: 'partials/views/bpexport.htm'
 		}).otherwise({ redirectTo: '/add' });
 	});
 })(angular, kmBpr);
@@ -103,6 +105,17 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 		};
 
 		loadChart();
+	}).controller("exportController", function ($scope, $q, exp) {
+		$scope.order = ['dt', 'sys', 'dia', 'pulse'];
+		$scope.filename = "bpr";
+
+		$scope.getBprArray = function () {
+			var deferred = $q.defer();
+			exp.fetch().then(function (response) {
+				deferred.resolve(response.data.records);
+			});
+			return deferred.promise;
+		};
 	});
 })(angular, kmBpr);
 
@@ -393,6 +406,14 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap']).constant("DEFAU
 			},
 			"getOldestDay": function getOldestDay() {
 				return $http.get("/bpr/firstyear");
+			}
+		};
+	}).factory("exp", function ($http) {
+		return {
+			"fetch": function fetch() {
+				var tpe = arguments.length <= 0 || arguments[0] === undefined ? "export" : arguments[0];
+
+				return $http.get("/bpr/" + tpe);
 			}
 		};
 	}).factory("chart", function ($http, settings) {

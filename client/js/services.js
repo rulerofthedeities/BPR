@@ -52,6 +52,14 @@
 		};
 	})
 
+	.factory("exp", ($http) =>{
+		return{
+			"fetch": (tpe = "export") => {
+				return $http.get("/bpr/" + tpe);
+			}
+		};
+	})
+
 	.factory("chart", ($http, settings) => {
 		return{
 			"fetch": (tpe = "chart") => {

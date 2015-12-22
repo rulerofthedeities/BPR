@@ -27,6 +27,7 @@
     "bootstrap": "~3.3.6",
     "font-awesome": "fontawesome#~4.5.0",
     "angular-bootstrap": "~0.14.3",
-    "c3": "~0.4.10"
+    "c3": "~0.4.10",
+    "ng-csv": "~0.3.6"
   }
 }

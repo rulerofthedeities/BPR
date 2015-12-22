@@ -11,8 +11,10 @@ var gulp = require('gulp'),
 		config.bowerDir + 'angular/angular.js',
 		config.bowerDir + 'angular-route/angular-route.min.js',
 		config.bowerDir + 'angular-bootstrap/ui-bootstrap-tpls.min.js',
+		config.bowerDir + 'angular-sanitize/angular-sanitize.min.js',
 		config.bowerDir + 'd3/d3.min.js',
-		config.bowerDir + 'c3/c3.min.js'],
+		config.bowerDir + 'c3/c3.min.js',
+		config.bowerDir + 'ng-csv/build/ng-csv.min.js'],
 
 	vendorCSS 	= [
 		config.bowerDir + 'bootstrap/dist/css/bootstrap.min.css',
