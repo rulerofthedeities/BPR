@@ -41,7 +41,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 
 			chart.fetch().then(function (response) {
 				var dbData = response.data.records,
-				    dataSet = ['SYS', 'DIA', 'Pulse', 'x'];
+				    dataSet = ['x', 'SYS', 'DIA', 'Pulse'];
 
 				//transpose data (swap columns and rows)
 				dbData = utils.transpose(dbData);
@@ -71,9 +71,10 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 		$scope.updateSelection = function () {
 			if ($scope.select !== "all") {
 				var dt = undefined;
-				chartData = [["SYS"], ["DIA"], ["Pulse"], ["x"]];
+				chartData = [["x"], ["SYS"], ["DIA"], ["Pulse"]];
+
 				for (var indx = 1; indx < srcChartData[0].length; indx++) {
-					dt = new Date(srcChartData[3][indx]);
+					dt = new Date(srcChartData[0][indx]);
 					if ($scope.select === "am" && dt.getHours() < 12 || $scope.select === "pm" && dt.getHours() >= 12) {
 						for (var indy = 0; indy <= 3; indy++) {
 							chartData[indy].push(srcChartData[indy][indx]);
@@ -224,7 +225,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 
 					//Datetime updated, reload view
 					if (dtupdated) {
-						bprecords.retrieve('all', pager.getCurrentMonth()).then(function (response) {
+						bprecords.retrieve('all', pager.getSelectedMonth()).then(function (response) {
 							$scope.records = response.data.records;
 						});
 					}
@@ -297,11 +298,13 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 				});
 
 				$scope.changeMonth = function (month) {
+					pager.setMonth(month);
 					$scope.pager.month = month;
 					$scope.$emit("month:updated", $scope.pager);
 				};
 
 				$scope.changeYear = function (year) {
+					pager.setYear(year);
 					$scope.pager.year = year;
 					$scope.$emit("month:updated", $scope.pager);
 				};
@@ -309,14 +312,18 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 				$scope.nextMonth = function (direction) {
 					var m = $scope.pager.month + direction;
 					m = m < 0 ? DEFAULTS.MONTHS - 1 : m;
-					$scope.pager.month = m % DEFAULTS.MONTHS;
+					m = m % DEFAULTS.MONTHS;
+					pager.setMonth(m);
+					$scope.pager.month = m;
 					$scope.$emit("month:updated", $scope.pager);
 				};
 
 				$scope.nextYear = function (direction) {
 					var y = $scope.pager.year + direction;
 					y = y < firstYear ? curYear : y;
-					$scope.pager.year = y > curYear ? firstYear : y;
+					y = y > curYear ? firstYear : y;
+					pager.setYear(y);
+					$scope.pager.year = y;
 					$scope.$emit("month:updated", $scope.pager);
 				};
 			}
@@ -481,12 +488,28 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 			}
 		};
 	}).service("pager", function () {
+		var _this2 = this;
+
 		var dt = new Date();
 
 		this.getCurrentMonth = function () {
 			return {
 				year: dt.getFullYear(),
 				month: dt.getMonth() };
+		};
+
+		this.getSelectedMonth = function () {
+			return {
+				year: _this2.year,
+				month: _this2.month };
+		};
+
+		this.setYear = function (y) {
+			_this2.year = y;
+		};
+
+		this.setMonth = function (m) {
+			_this2.month = m;
 		};
 	}).service('modal', function ($uibModal) {
 

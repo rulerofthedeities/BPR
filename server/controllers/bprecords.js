@@ -104,7 +104,7 @@ var updateNote = function(db, data, callback){
 		{_id: mongoId}, 
 		{$set: {
 			note: data.note, 
-			noteOnChart:data.onChart,
+			noteOnChart: data.onChart,
 			dtNote: new Date()}
 		}, 
 		function(err, r){

@@ -8,6 +8,7 @@
                 class="form-control" 
                 ng-model="ctrl.bpr.sys" 
                 placeholder="SYS" 
+                maxlength="4" 
                 ng-pattern="/^\d{2,3}$/" 
                 autofocus 
                 required>
@@ -21,6 +22,7 @@
                 class="form-control" 
                 ng-model="ctrl.bpr.dia" 
                 placeholder="DIA" 
+                maxlength="4" 
                 ng-pattern="/^\d{2,3}$/" 
                 required>
         	<span class="input-group-addon">mmHg</span>
@@ -33,6 +35,7 @@
                 class="form-control" 
                 ng-model="ctrl.bpr.pulse" 
                 placeholder="PULSE" 
+                maxlength="4" 
                 ng-pattern="/^\d{2,3}$/">
         	<span class="input-group-addon">/min</span>
         </div>

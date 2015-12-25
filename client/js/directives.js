@@ -110,7 +110,7 @@
 
 					//Datetime updated, reload view
 					if (dtupdated){
-						bprecords.retrieve('all', pager.getCurrentMonth()).then((response) => {
+						bprecords.retrieve('all', pager.getSelectedMonth()).then((response) => {
 							$scope.records = response.data.records;
 						});
 					}
@@ -184,11 +184,13 @@
 				});
 
 				$scope.changeMonth = (month) => {
+					pager.setMonth(month);
 					$scope.pager.month = month;
 					$scope.$emit("month:updated", $scope.pager);
 				};
 
 				$scope.changeYear = (year) => {
+					pager.setYear(year);
 					$scope.pager.year = year;
 					$scope.$emit("month:updated", $scope.pager);
 				};
@@ -196,14 +198,18 @@
 				$scope.nextMonth = (direction) => {
 					let  m = $scope.pager.month + direction;
 					m = m < 0 ? DEFAULTS.MONTHS - 1 : m;
-					$scope.pager.month = m % DEFAULTS.MONTHS;
+					m = m % DEFAULTS.MONTHS;
+					pager.setMonth(m);
+					$scope.pager.month = m;
 					$scope.$emit("month:updated", $scope.pager);
 				};
 
 				$scope.nextYear = (direction) => {
 					let  y = $scope.pager.year + direction;
 					y = y < firstYear ? curYear : y;
-					$scope.pager.year = y > curYear ? firstYear : y;
+					y = y > curYear ? firstYear : y;
+					pager.setYear(y);
+					$scope.pager.year = y;
 					$scope.$emit("month:updated", $scope.pager);
 				};
 			}

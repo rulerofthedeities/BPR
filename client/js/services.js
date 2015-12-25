@@ -136,6 +136,19 @@
 				month:dt.getMonth()};
 		};
 
+		this.getSelectedMonth = () => {
+			return {
+				year:this.year, 
+				month:this.month};
+		};
+
+		this.setYear = (y) => {
+			this.year = y;
+		}
+
+		this.setMonth = (m) =>{
+			this.month = m;
+		}
 
 	})
 
