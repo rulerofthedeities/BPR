@@ -8,7 +8,8 @@
 			<th class="text-center">Pulse <span class="unit">(/min)</span></th>
 			<th> </th>
 		</thead>
-		<tbody ng-keypress="onKeyPressed($event)">		
+		<tbody ng-keypress="onKeyPressed($event)">
+			<tr ng-hide="loaded"><td colspan="5">Loading data...</td></tr>
 			<tr ng-repeat="record in records track by $index" ng-dblclick="editRow($index)">
 				<td class="text-center">
 					<span ng-show="editRowNo!=$index" ng-bind="record.dt| date:'dd-MM-yy HH:mm'"></span>

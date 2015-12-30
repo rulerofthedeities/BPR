@@ -161,6 +161,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 				$scope.editRowNo = -1;
 				$scope.limits = settings.limits;
 				$scope.pageTpe = $attrs.tpe;
+				$scope.loaded = false;
 
 				cancelRow = function (rowNo) {
 					if (currentEdit && currentEdit.no !== rowNo) {
@@ -172,6 +173,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 					bprecords.retrieve('all', month).then(function (response) {
 						$scope.records = response.data.records;
 						$scope.totalNoOfRecords = response.data.total;
+						$scope.loaded = true;
 					});
 				};
 

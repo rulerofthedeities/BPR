@@ -41,6 +41,7 @@
 				$scope.editRowNo = -1;
 				$scope.limits = settings.limits;
 				$scope.pageTpe = $attrs.tpe;
+				$scope.loaded = false;
 
 				cancelRow = (rowNo) => {
 					if (currentEdit && currentEdit.no !== rowNo){
@@ -52,6 +53,7 @@
 					bprecords.retrieve('all', month).then((response) => {
 						$scope.records = response.data.records;
 						$scope.totalNoOfRecords = response.data.total;
+						$scope.loaded = true;
 					});
 				};
 
