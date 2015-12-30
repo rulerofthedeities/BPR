@@ -10,6 +10,7 @@
                 placeholder="SYS" 
                 maxlength="4" 
                 ng-pattern="/^\d{2,3}$/" 
+                autocomplete="off"
                 autofocus 
                 required>
         	<span class="input-group-addon">mmHg</span>
@@ -24,6 +25,7 @@
                 placeholder="DIA" 
                 maxlength="4" 
                 ng-pattern="/^\d{2,3}$/" 
+                autocomplete="off"
                 required>
         	<span class="input-group-addon">mmHg</span>
         </div>
@@ -36,7 +38,8 @@
                 ng-model="ctrl.bpr.pulse" 
                 placeholder="PULSE" 
                 maxlength="4" 
-                ng-pattern="/^\d{2,3}$/">
+                ng-pattern="/^\d{2,3}$/"
+                autocomplete="off">
         	<span class="input-group-addon">/min</span>
         </div>
        	<button type="submit" class="btn" ng-class="bpForm.$invalid ? '' : 'btn-success'" ng-disabled="bpForm.$invalid">Add</button>

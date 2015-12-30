@@ -132,6 +132,17 @@ var getFirstYear = function(db, callback){
 	});
 };
 
+//Format records for export to csv/excel
+var formatDates = function(records){
+	var dt;
+	records.forEach(function(record) {
+		dt = new Date(record.dt);
+		record.d = dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' + ('0' + dt.getDate()).slice(-2);
+		record.h = ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2);
+	});
+	return records;
+};
+
 module.exports = {
 	save: function(req, res){
 		var newRecord = req.body;
@@ -152,6 +163,9 @@ module.exports = {
 			});
 		} else {
 			loadBPR(mongo.DB, {'tpe':tpe, 'max':max, 'month': month}, function(records, total){
+				if (tpe === "export"){
+					records = formatDates(records);
+				}
 				res.status(200).send({"records" : records, "total": total});
 			});
 		}

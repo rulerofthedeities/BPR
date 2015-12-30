@@ -81,7 +81,7 @@
 	})
 
 .controller("exportController", function($scope, $q, exp){
-	$scope.order = ['dt', 'sys', 'dia', 'pulse'];
+	$scope.order = ['d', 'h', 'sys', 'dia', 'pulse'];
 	$scope.filename = "bpr";
 
 	$scope.getBprArray = () => {

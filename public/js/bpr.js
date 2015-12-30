@@ -107,7 +107,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 
 		loadChart();
 	}).controller("exportController", function ($scope, $q, exp) {
-		$scope.order = ['dt', 'sys', 'dia', 'pulse'];
+		$scope.order = ['d', 'h', 'sys', 'dia', 'pulse'];
 		$scope.filename = "bpr";
 
 		$scope.getBprArray = function () {
