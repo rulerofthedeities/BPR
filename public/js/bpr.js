@@ -436,6 +436,9 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 				var limits = settings.limits,
 				    options = undefined,
 				    defaultOptions = {
+					size: {
+						height: 400
+					},
 					data: {
 						x: 'x',
 						columns: columnData,

@@ -69,6 +69,9 @@
 				let limits = settings.limits,
 					options,
 					defaultOptions = {
+					size: {
+						height: 400
+					},
 					data: {
 						x: 'x',
 						columns: columnData,
