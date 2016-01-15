@@ -11,15 +11,11 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 
 //routing
-app.get('/', function(request, response){
-	response.sendFile(__dirname + '/public/bpr.htm');
-});
-
 routes.initialize(app, new express.Router());
 
 db.connect(function(){
 	app.listen(app.get('port'), function() { 
-	    console.log('Server up: http://localhost:' + app.get('port'));
+		console.log('Server up: http://localhost:' + app.get('port'));
 	});
 });
 
