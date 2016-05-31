@@ -443,9 +443,9 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 						x: 'x',
 						columns: columnData,
 						types: {
-							SYS: 'spline',
-							DIA: 'spline',
-							Pulse: 'spline'
+							SYS: 'line',
+							DIA: 'line',
+							Pulse: 'line'
 						},
 						hide: ['Pulse'],
 						xFormat: '%Y-%m-%dT%H:%M:%S.%LZ'
