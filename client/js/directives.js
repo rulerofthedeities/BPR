@@ -91,7 +91,8 @@
 					if (
 						$scope.bpTableForm["sys" + rowNo].$invalid || 
 						$scope.bpTableForm["dia" + rowNo].$invalid || 
-						$scope.bpTableForm["pulse" + rowNo].$invalid ||
+						$scope.bpTableForm["pulse" + rowNo].$invalid || 
+						$scope.bpTableForm["pulse" + rowNo].$invalid || 
 						$scope.bpTableForm["date" + rowNo].$invalid || 
 						$scope.bpTableForm["time" + rowNo].$invalid
 					){

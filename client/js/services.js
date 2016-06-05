@@ -73,14 +73,13 @@
 						height: 400
 					},
 					data: {
-						x: 'x',
+						x: 'dt',
 						columns: columnData,
 						types: {
 							SYS: 'line',
 							DIA: 'line' ,
 							Pulse: 'line' 
 						},
-						hide: ['Pulse'],
 						xFormat: '%Y-%m-%dT%H:%M:%S.%LZ'
 					},
 					axis: {
