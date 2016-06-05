@@ -11,7 +11,7 @@
 		let loadChart = (options = {}) => {
 			chart.fetch().then(function(response){
 				let dbData = response.data.records,
-					dataSet = ['x', 'SYS', 'DIA', 'Pulse'];
+					dataSet = ['SYS', 'DIA', 'Pulse', 'x'];
 
 				//transpose data (swap columns and rows)
 				dbData = utils.transpose(dbData);
@@ -42,10 +42,10 @@
 		$scope.updateSelection = () => {
 			if ($scope.select !== "all"){
 				let dt;
-				chartData = [["x"],["SYS"],["DIA"],["Pulse"]];
+				chartData = [["SYS"],["DIA"],["Pulse"],["x"]];
 			
 				for (let indx = 1; indx < srcChartData[0].length; indx++){
-					dt = new Date(srcChartData[0][indx]);
+					dt = new Date(srcChartData[3][indx]);
 					if (($scope.select === "am" && dt.getHours() < 12) || ($scope.select === "pm" && dt.getHours() >= 12)){
 						for (let indy = 0; indy <= 3; indy++){
 							chartData[indy].push(srcChartData[indy][indx]);

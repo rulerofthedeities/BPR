@@ -41,7 +41,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 
 			chart.fetch().then(function (response) {
 				var dbData = response.data.records,
-				    dataSet = ['x', 'SYS', 'DIA', 'Pulse'];
+				    dataSet = ['SYS', 'DIA', 'Pulse', 'x'];
 
 				//transpose data (swap columns and rows)
 				dbData = utils.transpose(dbData);
@@ -71,10 +71,10 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 		$scope.updateSelection = function () {
 			if ($scope.select !== "all") {
 				var dt = undefined;
-				chartData = [["x"], ["SYS"], ["DIA"], ["Pulse"]];
+				chartData = [["SYS"], ["DIA"], ["Pulse"], ["x"]];
 
 				for (var indx = 1; indx < srcChartData[0].length; indx++) {
-					dt = new Date(srcChartData[0][indx]);
+					dt = new Date(srcChartData[3][indx]);
 					if ($scope.select === "am" && dt.getHours() < 12 || $scope.select === "pm" && dt.getHours() >= 12) {
 						for (var indy = 0; indy <= 3; indy++) {
 							chartData[indy].push(srcChartData[indy][indx]);
