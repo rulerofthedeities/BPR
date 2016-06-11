@@ -10,6 +10,7 @@
 			thisChart;
 
 		let loadChart = (options = {}) => {
+			$scope.loaded = false;
 			chart.fetch().then(function(response){
 				let dbData = response.data.records;
 
@@ -23,6 +24,7 @@
 				srcChartData = angular.copy(dbData); //for filtering
 				thisChart = chart.build(chartData, {});
 				$scope.updateLines();
+				$scope.loaded = true;
 			});
 		};
 

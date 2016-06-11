@@ -40,6 +40,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 		var loadChart = function loadChart() {
 			var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
+			$scope.loaded = false;
 			chart.fetch().then(function (response) {
 				var dbData = response.data.records;
 
@@ -53,6 +54,7 @@ var kmBpr = angular.module("kmBpr", ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'n
 				srcChartData = angular.copy(dbData); //for filtering
 				thisChart = chart.build(chartData, {});
 				$scope.updateLines();
+				$scope.loaded = true;
 			});
 		};
 
